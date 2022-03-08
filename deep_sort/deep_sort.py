@@ -140,7 +140,7 @@ class DeepSort(object):
         boxes = np.array([d.tlwh for d in detections])
         scores = np.array([d.confidence for d in detections])
 
-        indices = self.non_max_suppression(boxes, 0.95,scores) #get rid?
+        indices = self.non_max_suppression(boxes, 0.85,scores) #get rid?
         detections = [detections[i] for i in indices]
 
         # update tracker
