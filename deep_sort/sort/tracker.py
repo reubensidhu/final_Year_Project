@@ -6,6 +6,7 @@ from . import linear_assignment
 from . import iou_matching
 from .track import Track
 
+import collections
 
 class Tracker:
     """
@@ -44,6 +45,7 @@ class Tracker:
 
         self.kf = kalman_filter.KalmanFilter()
         self.tracks = []
+        self.prev_track_clsses = {}
         self._next_id = 1
 
     def predict(self):
@@ -80,6 +82,17 @@ class Tracker:
             self.tracks[track_idx].mark_missed()
         for detection_idx in unmatched_detections:
             self._initiate_track(detections[detection_idx], classes[detection_idx].item())
+        for t in self.tracks:
+            if t.is_deleted():
+                del self.prev_track_clsses[t.track_id]
+            else:
+                if t.track_id in self.prev_track_clsses:
+                    self.prev_track_clsses[t.track_id].appendleft(t.class_id)
+                    if len(self.prev_track_clsses[t.track_id])>10:
+                        self.prev_track_clsses[t.track_id].pop()
+                else:
+                    self.prev_track_clsses[t.track_id] = collections.deque([t.class_id])
+        
         self.tracks = [t for t in self.tracks if not t.is_deleted()]
 
         # Update distance metric.

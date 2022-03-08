@@ -30,12 +30,76 @@ from yolov5.utils.plots import Annotator, colors
 from deep_sort.utils.parser import get_config
 from deep_sort.deep_sort import DeepSort
 
+import numpy as np
+import torch.nn as nn
+
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # yolov5 deepsort root directory
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
+class SiameseNetwork(nn.Module):
+    def __init__(self):
+        super(SiameseNetwork, self).__init__()
+
+        #Outputs batch X 512 X 1 X 1 
+        self.net = nn.Sequential(
+            nn.Conv2d(3,32,kernel_size=3,stride=2),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(32),
+            #nn.Dropout2d(p=0.4),
+
+            nn.Conv2d(32,64,kernel_size=3,stride=2),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(64),
+            #nn.Dropout2d(p=0.4),
+
+            nn.Conv2d(64,128,kernel_size=3,stride=2),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(128),
+            #nn.Dropout2d(p=0.4),            
+
+
+            nn.Conv2d(128,256,kernel_size=1,stride=2),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(256),
+            #nn.Dropout2d(p=0.4),
+
+            nn.Conv2d(256,256,kernel_size=1,stride=2),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(256),
+            #nn.Dropout2d(p=0.4),    
+
+            nn.Conv2d(256,512,kernel_size=3,stride=2),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(512),    
+
+            #1X1 filters to increase dimensions
+            nn.Conv2d(512,1024,kernel_size=1,stride=1),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(1024),    
+
+            )
+
+
+    def forward_once(self, x):
+        output = self.net(x)
+        #output = output.view(output.size()[0], -1)
+        #output = self.fc(output)
+        
+        output = torch.squeeze(output)
+        return output
+
+    def forward(self, input1, input2,input3=None):
+        output1 = self.forward_once(input1)
+        output2 = self.forward_once(input2)
+
+        if input3 is not None:
+            output3 = self.forward_once(input3)
+            return output1,output2,output3
+
+        return output1, output2
 
 def detect(opt):
     out, source, yolo_model, deep_sort_model, show_vid, save_vid, save_txt, imgsz, evaluate, half, project, name, exist_ok= \
@@ -48,8 +112,7 @@ def detect(opt):
     # initialize deepsort
     cfg = get_config()
     cfg.merge_from_file(opt.config_deepsort)
-    deepsort = DeepSort(deep_sort_model,
-                        device,
+    deepsort = DeepSort(wt_path='siameseweights.pt',
                         max_dist=cfg.DEEPSORT.MAX_DIST,
                         max_iou_distance=cfg.DEEPSORT.MAX_IOU_DISTANCE,
                         max_age=cfg.DEEPSORT.MAX_AGE, n_init=cfg.DEEPSORT.N_INIT, nn_budget=cfg.DEEPSORT.NN_BUDGET,
