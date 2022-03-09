@@ -232,6 +232,8 @@ def detect(opt):
                 confs = det[:, 4]
                 clss = det[:, 5]
 
+                tdView = None
+
                 
                 if frame_idx == 0:
                 #CODE FOR COMPUTING PROJECTION
@@ -246,6 +248,9 @@ def detect(opt):
                     outputs = deepsort.update(xywhs.cpu(), confs.cpu(), clss.cpu(), im0)
                     t5 = time_sync()
                     dt[3] += t5 - t4
+
+
+                    tdView = table.draw_balls(outputs, confs)
 
                     # draw boxes for visualization
                     if len(outputs) > 0:
@@ -279,7 +284,7 @@ def detect(opt):
             # Stream results
             im0 = annotator.result()
             if show_vid:
-                cv2.imshow(str(p), im0)
+                cv2.imshow(str(p), im0) ###Changed!!!
                 if cv2.waitKey(1) == ord('q'):  # q to quit
                     raise StopIteration
 
