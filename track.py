@@ -237,7 +237,8 @@ def detect(opt):
                 
                 if frame_idx == 0:
                 #CODE FOR COMPUTING PROJECTION
-                    projector = ProjectionCalculator3d(im0, xywhs[:, 0:2])
+                    centers = xywhs[:, 0:2].cpu().numpy()
+                    projector = ProjectionCalculator3d(im0, centers)
                     table = tablecreation(projector)
                     table.create_table()
                     #pass
