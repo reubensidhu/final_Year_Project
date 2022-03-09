@@ -6,7 +6,7 @@
 #then each time button is pressed use that same model to compute results and draw ball
 import numpy as np
 import cv2 as cv
-from getCorners import getCorners
+from homography.getCorners import getCorners
 #from yoloModel import PoolBallDetection
 
 #class ProjectionCalculator:
