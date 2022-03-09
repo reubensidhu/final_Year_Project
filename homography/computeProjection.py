@@ -19,21 +19,21 @@ from getCorners import getCorners
 #    self.points2d = points2d
 
 class ProjectionCalculator3d():
-  def __init__(self, frame, model):
+  def __init__(self, frame, centers):
         self.frame = frame
-        self.model = model
+        self.centers = centers
         self.getPoints()
 
   def getPoints(self):
     c = getCorners(self.frame)
     corners = c()
     print('corners', corners)
-    labels, coords = self.model.score_frame(self.frame)
+    #labels, coords = self.model.score_frame(self.frame)
     #coords = coords.numpy()
-    centers = []
-    for i in range(0, 2):
-      centers.append([int(self.frame.shape[1] * ((coords[i][0]+coords[i][2])/2)), 
-      int(self.frame.shape[0] * ((coords[i][1]+coords[i][3])/2))])
+    centers = self.centers
+    #for i in range(0, 2):
+    #  centers.append([int(self.frame.shape[1] * ((self.coords[i][0]+self.coords[i][2])/2)), 
+    #  int(self.frame.shape[0] * ((self.coords[i][1]+self.coords[i][3])/2))])
     if c.isShortSide and (centers[0][1] > centers[1][1]):
       centers[0], centers[1] = centers[1], centers[0]
     elif (not c.isShortSide) and (centers[0][0] > centers[1][0]):

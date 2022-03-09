@@ -30,6 +30,10 @@ from yolov5.utils.plots import Annotator, colors
 from deep_sort.utils.parser import get_config
 from deep_sort.deep_sort import DeepSort
 
+from homography.computeProjection import ProjectionCalculator3d
+from homography.getCorners import getCorners
+from homography.tablecreation import tablecreation
+
 import numpy as np
 import torch.nn as nn
 
@@ -172,6 +176,11 @@ def detect(opt):
     if pt and device.type != 'cpu':
         model(torch.zeros(1, 3, *imgsz).to(device).type_as(next(model.model.parameters())))  # warmup
     dt, seen = [0.0, 0.0, 0.0, 0.0], 0
+
+    #projector = None
+    table = None
+
+
     for frame_idx, (path, img, im0s, vid_cap, s) in enumerate(dataset):
         t1 = time_sync()
         img = torch.from_numpy(img).to(device)
@@ -194,6 +203,7 @@ def detect(opt):
 
         # Process detections
         for i, det in enumerate(pred):  # detections per image
+            #DET HERE ARE DETECTIONS FOR 640 BY 640 IMGSIZE!!!
             seen += 1
             if webcam:  # batch_size >= 1
                 p, im0, _ = path[i], im0s[i].copy(), dataset.count
@@ -217,40 +227,50 @@ def detect(opt):
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
+                #DET HERE ARE THE BOXES YOU WANT TO PASS TO DETECTOR!!!
                 xywhs = xyxy2xywh(det[:, 0:4])
                 confs = det[:, 4]
                 clss = det[:, 5]
 
-                # pass detections to deepsort
-                t4 = time_sync()
-                outputs = deepsort.update(xywhs.cpu(), confs.cpu(), clss.cpu(), im0)
-                t5 = time_sync()
-                dt[3] += t5 - t4
+                
+                if frame_idx == 0:
+                #CODE FOR COMPUTING PROJECTION
+                    projector = ProjectionCalculator3d(im0, xywhs[:, 0:2])
+                    table = tablecreation(projector)
+                    table.create_table()
+                    #pass
 
-                # draw boxes for visualization
-                if len(outputs) > 0:
-                    for j, (output, conf) in enumerate(zip(outputs, confs)):
+                else:
+                    # pass detections to deepsort
+                    t4 = time_sync()
+                    outputs = deepsort.update(xywhs.cpu(), confs.cpu(), clss.cpu(), im0)
+                    t5 = time_sync()
+                    dt[3] += t5 - t4
 
-                        bboxes = output[0:4]
-                        id = output[4]
-                        cls = output[5]
+                    # draw boxes for visualization
+                    if len(outputs) > 0:
+                        for j, (output, conf) in enumerate(zip(outputs, confs)):
 
-                        c = int(cls)  # integer class
-                        label = f'{id} {names[c]} {conf:.2f}'
-                        annotator.box_label(bboxes, label, color=colors(c, True))
+                            bboxes = output[0:4]
+                            id = output[4]
+                            cls = output[5]
 
-                        if save_txt:
-                            # to MOT format
-                            bbox_left = output[0]
-                            bbox_top = output[1]
-                            bbox_w = output[2] - output[0]
-                            bbox_h = output[3] - output[1]
-                            # Write MOT compliant results to file
-                            with open(txt_path, 'a') as f:
-                                f.write(('%g ' * 10 + '\n') % (frame_idx + 1, id, bbox_left,  # MOT format
-                                                               bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))
+                            c = int(cls)  # integer class
+                            label = f'{id} {names[c]} {conf:.2f}'
+                            annotator.box_label(bboxes, label, color=colors(c, True))
 
-                LOGGER.info(f'{s}Done. YOLO:({t3 - t2:.3f}s), DeepSort:({t5 - t4:.3f}s)')
+                            if save_txt:
+                                # to MOT format
+                                bbox_left = output[0]
+                                bbox_top = output[1]
+                                bbox_w = output[2] - output[0]
+                                bbox_h = output[3] - output[1]
+                                # Write MOT compliant results to file
+                                with open(txt_path, 'a') as f:
+                                    f.write(('%g ' * 10 + '\n') % (frame_idx + 1, id, bbox_left,  # MOT format
+                                                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))
+
+                    LOGGER.info(f'{s}Done. YOLO:({t3 - t2:.3f}s), DeepSort:({t5 - t4:.3f}s)')
 
             else:
                 deepsort.increment_ages()

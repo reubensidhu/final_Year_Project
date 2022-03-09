@@ -8,15 +8,17 @@ from getCorners import getCorners
 
 
 class tablecreation:
-    def __init__(self, projectionCalculator3d, frameWidth=2016, frameHeight=1512):
+    def __init__(self, projectionCalculator3d):#, frameWidth=2016, frameHeight=1512):
         self.projCalculator = projectionCalculator3d
+        self.frameWidth = self.projCalculator.frame.shape[1]
+        self.frameWidth = self.projCalculator.frame.shape[1]
         self.theight, self.twidth = 445, 865 #252, 504
         self.border_size = 29 #17
         #self.height, self.width = 300, 531
         #self.theight, self.twidth = self.height - self.border_size, self.width - self.border_size
         self.rail_size = int(self.theight*0.02808988764)
-        self.frameWidth = frameWidth
-        self.frameHeight = frameHeight
+        #self.frameWidth = frameWidth
+        #self.frameHeight = frameHeight
         self.background = None
 
     def create_table(self, hsv = [96.91171098, 204.05003044, 209.48951356]):
@@ -36,35 +38,37 @@ class tablecreation:
         cv2.circle(img, (self.border_size + self.rail_size + (self.twidth-self.rail_size)//4, self.border_size + self.theight//2), 2, (0, 0, 0), -1) 
         cv2.circle(img, (self.border_size + + self.rail_size + (int(3*(self.twidth-self.rail_size)/4)), self.border_size + (self.theight//2)), 2, (0, 0, 0), -1)
 
-        self.background = img
+        #self.background = img
 
-        return img
+        #return img
 
-    def draw_holes(self, color3 = (0,0,0)):
+    #def draw_holes(self, color3 = (0,0,0)):
             
         color = (144, 154, 171) # gray color
         color2 = (0, 0, 0) #  gray color, for circles (holes) on generated img
 
-        img = self.background.copy() # make a copy of input image
+        #img = self.background.copy() # make a copy of input image
         
         # adding circles to represent holes on table
         pocket_radius = int(self.twidth*0.029)
-        cv2.circle(self.background, (self.border_size+5, self.border_size+5), pocket_radius+4,color, -1) # top right
-        cv2.circle(self.background, (self.twidth+self.border_size-5,self.border_size+5), pocket_radius+4, color, -1) # top left
-        cv2.circle(self.background, (self.border_size+5,self.theight+self.border_size-5), pocket_radius+4, color, -1) # bot left
-        cv2.circle(self.background, (self.twidth+self.border_size-5,self.theight+self.border_size-5), pocket_radius+4, color, -1) # bot right
-        cv2.circle(self.background, (self.twidth//2 + self.border_size, self.theight+self.border_size+3), pocket_radius+2, color, -1) # mid right
-        cv2.circle(self.background, (self.twidth//2 + self.border_size,self.border_size-3), pocket_radius+2, color, -1) # mid left
+        cv2.circle(img, (self.border_size+5, self.border_size+5), pocket_radius+4,color, -1) # top right
+        cv2.circle(img, (self.twidth+self.border_size-5,self.border_size+5), pocket_radius+4, color, -1) # top left
+        cv2.circle(img, (self.border_size+5,self.theight+self.border_size-5), pocket_radius+4, color, -1) # bot left
+        cv2.circle(img, (self.twidth+self.border_size-5,self.theight+self.border_size-5), pocket_radius+4, color, -1) # bot right
+        cv2.circle(img, (self.twidth//2 + self.border_size, self.theight+self.border_size+3), pocket_radius+2, color, -1) # mid right
+        cv2.circle(img, (self.twidth//2 + self.border_size,self.border_size-3), pocket_radius+2, color, -1) # mid left
         
         # adding another, smaller circles to the previous ones
-        cv2.circle(self.background, (self.border_size+5, self.border_size+5), pocket_radius, color2, -1) # top right
-        cv2.circle(self.background, (self.twidth+self.border_size-5,self.border_size+5), pocket_radius, color2, -1) # top left
-        cv2.circle(self.background, (self.border_size+5,self.theight+self.border_size-5), pocket_radius, color2, -1) # bot left
-        cv2.circle(self.background, (self.twidth+self.border_size-5,self.theight+self.border_size-5), pocket_radius, color2, -1) # bot right
-        cv2.circle(self.background, (self.twidth//2 + self.border_size,self.theight+self.border_size+3), pocket_radius-2, color2, -1) # mid right
-        cv2.circle(self.background, (self.twidth//2 + self.border_size,self.border_size-3), pocket_radius-2, color2, -1) # mid left
+        cv2.circle(img, (self.border_size+5, self.border_size+5), pocket_radius, color2, -1) # top right
+        cv2.circle(img, (self.twidth+self.border_size-5,self.border_size+5), pocket_radius, color2, -1) # top left
+        cv2.circle(img, (self.border_size+5,self.theight+self.border_size-5), pocket_radius, color2, -1) # bot left
+        cv2.circle(img, (self.twidth+self.border_size-5,self.theight+self.border_size-5), pocket_radius, color2, -1) # bot right
+        cv2.circle(img, (self.twidth//2 + self.border_size,self.theight+self.border_size+3), pocket_radius-2, color2, -1) # mid right
+        cv2.circle(img, (self.twidth//2 + self.border_size,self.border_size-3), pocket_radius-2, color2, -1) # mid left
         
         #return self.background
+        self.background = img
+        return self.background
 
     def draw_balls(self, results, size = -1, img = 0): #radius of ball is roughly 4.75cm 
         final = self.background.copy()
@@ -180,8 +184,7 @@ class tablecreation:
 model = PoolBallDetection()
 projector = ProjectionCalculator3d(cv2.imread(r'C:\Users\reuby\OneDrive\Pictures\longside1.jpeg') , model)
 c = tablecreation(projector)
-canvas = c.create_table()
-c.draw_holes(canvas)
+c.create_table()
 frame = cv2.imread(r'C:\Users\reuby\OneDrive\Pictures\longside1.jpeg')
 table = c.draw_balls(results=model.score_frame(frame))
 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
