@@ -41,7 +41,6 @@ class ProjectionCalculator3d():
     else:
       pass
     print('corners', corners, 'center', centers)
-    centers = centers.cpu().numpy()
     self.points2d = np.concatenate((corners, centers))
     print('2d points', self.points2d)
     self.points3d = [[0, 0, 0], [865, 0, 0], [865, 445, 0], [0, 445, 0], [222.5, 222.5, -6], [642.5, 222.5, -6]] # change 5 to -h + r for last 2

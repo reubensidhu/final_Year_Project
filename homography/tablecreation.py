@@ -80,7 +80,7 @@ class tablecreation:
                 break
             #row = cords[i]
             if conf >= 0.4:
-                x, y = (((output[0]+output[2])*self.frameWidth)//2, ((output[1]+output[3])*self.frameHeight)//2)
+                x, y = ((output[0]+output[2])//2, (output[1]+output[3])//2)
                 X, Y, Z = self.projCalculator.getUnprojectedPoint((x, y), self.theight*-0.01348314606)#change z component
                 X, Y = int(X), int(Y)
                 print(X, Y, confs[i], output[5])
