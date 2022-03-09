@@ -2,9 +2,9 @@ import cv2
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from computeProjection import ProjectionCalculator3d
-from yoloModel import PoolBallDetection
-from getCorners import getCorners
+from homography.computeProjection import ProjectionCalculator3d
+#from yoloModel import PoolBallDetection
+#from homography.getCorners import getCorners
 
 
 class tablecreation:
@@ -181,11 +181,11 @@ class tablecreation:
         plt.savefig('demo.png', bbox_inches='tight')
         #plt.show()
 
-model = PoolBallDetection()
-projector = ProjectionCalculator3d(cv2.imread(r'C:\Users\reuby\OneDrive\Pictures\longside1.jpeg') , model)
-c = tablecreation(projector)
-c.create_table()
-frame = cv2.imread(r'C:\Users\reuby\OneDrive\Pictures\longside1.jpeg')
-table = c.draw_balls(results=model.score_frame(frame))
-frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-c.show_img_compar_i([frame, table])
+#model = PoolBallDetection()
+#projector = ProjectionCalculator3d(cv2.imread(r'C:\Users\reuby\OneDrive\Pictures\longside1.jpeg') , model)
+#c = tablecreation(projector)
+#c.create_table()
+#frame = cv2.imread(r'C:\Users\reuby\OneDrive\Pictures\longside1.jpeg')
+#table = c.draw_balls(results=model.score_frame(frame))
+#frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#c.show_img_compar_i([frame, table])

@@ -10,7 +10,6 @@ from collections import defaultdict
 import sys
 import math
 
-
 class getCorners:
 	def __init__(self, frame):
 		self.table_center = [0, 0]
