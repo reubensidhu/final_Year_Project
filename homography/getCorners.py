@@ -219,10 +219,10 @@ class getCorners:
 		#	else:
 		#		ul = p
 
-		left_side = math.dist(ul, ll) #??????
-		right_side = math.dist(ur, lr)
-		bottom_side = math.dist(ll, lr)
-		top_side = math.dist(ul, ur)
+		left_side = math.sqrt((ul[0] - ll[0])**2 + (ul[1] - ll[1])**2)#math.dist(ul, ll) #??????
+		right_side = math.sqrt((ur[0] - lr[0])**2 + (ur[1] - lr[1])**2)#math.dist(ur, lr)
+		bottom_side = math.sqrt((ll[0] - lr[0])**2 + (ll[1] - lr[1])**2)#math.dist(ll, lr)
+		top_side = math.sqrt((ul[0] - ur[0])**2 + (ul[1] - ur[1])**2)#math.dist(ul, ur)
 
 		if (min(left_side, right_side) * 2 >= min(bottom_side, top_side)): #(2 * length >= width):
 			#print('shortside', left_side, bottom_side)
