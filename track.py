@@ -34,6 +34,8 @@ from homography.computeProjection import ProjectionCalculator3d
 from homography.getCorners import getCorners
 from homography.tablecreation import tablecreation
 
+from PIL import Image
+
 import numpy as np
 import torch.nn as nn
 
@@ -179,7 +181,13 @@ def detect(opt):
 
     #projector = None
     table = None
-
+    width = 1280
+    hieght = 720
+    channel = 3
+ 
+    fps = 30
+    sec = 60
+ 
 
     for frame_idx, (path, img, im0s, vid_cap, s) in enumerate(dataset):
         t1 = time_sync()
@@ -212,7 +220,9 @@ def detect(opt):
                 p, im0, _ = path, im0s.copy(), getattr(dataset, 'frame', 0)
 
             p = Path(p)  # to Path
-            save_path = str(save_dir / p.name)  # im.jpg, vid.mp4, ...
+            #save_path = str(save_dir / p.name)  # im.jpg, vid.mp4, ...
+            save_path = 'runs/track/exp20/practiceVid.avi'
+            print('PATH!!!!!!', save_path)
             s += '%gx%g ' % img.shape[2:]  # print string
 
             annotator = Annotator(im0, line_width=2, pil=not ascii)
@@ -233,6 +243,7 @@ def detect(opt):
                 clss = det[:, 5]
 
                 tdView = None
+                img2 = None
 
                 
                 if frame_idx == 0:
@@ -252,6 +263,15 @@ def detect(opt):
 
 
                     tdView = table.draw_balls(outputs, confs)
+                    img2 = np.random.randint(0,255, (hieght, width, channel), dtype = np.uint8)
+                    #print("ARRAY1", tdView)
+                    tdView = np.pad(tdView, ((108, 109), (178, 179), (0, 0)))
+                    tdView = cv2.cvtColor(tdView, cv2.COLOR_BGR2RGB)
+                    print('TYPEEE', tdView.dtype)
+                    print("ARRAY", tdView.shape)
+                    print("ARRAY2", img2.shape)
+
+
 
                     # draw boxes for visualization
                     if len(outputs) > 0:
@@ -300,10 +320,14 @@ def detect(opt):
                         w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                         h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                     else:  # stream
-                        fps, w, h = 30, im0.shape[1], im0.shape[0]
+                        fps, w, h = 30, tdView.shape[1], tdView.shape[0]
+                    
 
-                    vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
-                vid_writer.write(im0)
+                    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                    vid_writer = cv2.VideoWriter(save_path, fourcc, float(fps), (width, hieght), True)
+        
+                #img = np.random.randint(0,255, (hieght, width, channel), dtype = np.uint8)
+                vid_writer.write(tdView)
 
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
