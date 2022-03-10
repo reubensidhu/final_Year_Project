@@ -4,6 +4,7 @@
 
 #declare model when gui app launches then feed that model here for the first frame.
 #then each time button is pressed use that same model to compute results and draw ball
+from os import TMP_MAX
 import numpy as np
 import cv2 as cv
 from homography.getCorners import getCorners
@@ -35,9 +36,13 @@ class ProjectionCalculator3d():
     #  centers.append([int(self.frame.shape[1] * ((self.coords[i][0]+self.coords[i][2])/2)), 
     #  int(self.frame.shape[0] * ((self.coords[i][1]+self.coords[i][3])/2))])
     if c.isShortSide and (centers[0][1] > centers[1][1]):
-      centers[0], centers[1] = centers[1], centers[0]
+      tmp1 = centers[0]
+      tmp2 = centers[1]
+      centers = [tmp2, tmp1]
     elif (not c.isShortSide) and (centers[0][0] > centers[1][0]):
-      centers[0], centers[1] = centers[1], centers[0]
+      tmp1 = centers[0]
+      tmp2 = centers[1]
+      centers = [tmp2, tmp1]
     else:
       pass
     print('corners', corners, 'center', centers)
