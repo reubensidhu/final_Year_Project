@@ -74,6 +74,8 @@ class Track:
         self.time_since_update = 0
         self.yolo_bbox = [0, 0, 0, 0]
 
+        self.final_clss = None
+
         self.state = TrackState.Tentative
         self.features = []
         if feature is not None:
