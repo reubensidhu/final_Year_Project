@@ -75,6 +75,7 @@ class Track:
         self.yolo_bbox = [0, 0, 0, 0]
 
         self.final_clss = None
+        #j
 
         self.state = TrackState.Tentative
         self.features = []
