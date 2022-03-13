@@ -85,11 +85,19 @@ class Tracker:
         for t in self.tracks:
             if t.is_deleted():
                 del self.prev_track_clsses[t.track_id]
+            elif t.final_clss != None:
+                continue
+            #elif len(self.prev_track_clsses[t.track_id]) == 20:
+             #   l = self.prev_track_clsses[t.track_id]
+              #  t.final_clss = max(set(l), key = l.count)
+                #del self.prev_track_clsses[t.track_id]
             else:
                 if t.track_id in self.prev_track_clsses:
-                    self.prev_track_clsses[t.track_id].appendleft(t.class_id)
-                    if len(self.prev_track_clsses[t.track_id])>10:
-                        self.prev_track_clsses[t.track_id].pop()
+                    if len(self.prev_track_clsses[t.track_id])==20:
+                        l = self.prev_track_clsses[t.track_id]
+                        t.final_clss = max(set(l), key = l.count)
+                    else:
+                        self.prev_track_clsses[t.track_id].appendleft(t.class_id)
                 else:
                     self.prev_track_clsses[t.track_id] = collections.deque([t.class_id])
         
