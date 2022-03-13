@@ -168,6 +168,7 @@ class tablecreation:
             # add black color around the drawn ball (for cosmetics)            
             # small circle for light reflection
             #final = cv2.circle(final, (X-2,Y-2), 2, (255,255,255), -1)
+            
         return final
 
     def show_img_compar_i(self, imgs):
