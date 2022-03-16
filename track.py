@@ -220,8 +220,8 @@ def detect(opt):
                 p, im0, _ = path, im0s.copy(), getattr(dataset, 'frame', 0)
 
             p = Path(p)  # to Path
-            #save_path = str(save_dir / p.name)  # im.jpg, vid.mp4, ...
-            save_path = 'runs/track/exp20/practiceVid.avi'
+            save_path = str(save_dir / p.name)  # im.jpg, vid.mp4, ...
+            #save_path = 'runs/track/exp20/practiceVid.avi'
             print('PATH!!!!!!', save_path)
             s += '%gx%g ' % img.shape[2:]  # print string
 
@@ -263,7 +263,7 @@ def detect(opt):
 
 
                     tdView = table.draw_balls(outputs, confs)
-                    img2 = np.random.randint(0,255, (hieght, width, channel), dtype = np.uint8)
+                    #img2 = np.random.randint(0,255, (hieght, width, channel), dtype = np.uint8)
                     #print("ARRAY1", tdView)
                     tdView = np.pad(tdView, ((108, 109), (178, 179), (0, 0)))
                     tdView = cv2.cvtColor(tdView, cv2.COLOR_BGR2RGB)
