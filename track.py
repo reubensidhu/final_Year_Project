@@ -181,11 +181,12 @@ def detect(opt):
 
     #projector = None
     table = None
-    width = 1280
-    hieght = 720
+    background = Image.new('RGB', (2560, 1440), color = 'black')
+    width = 2560
+    hieght = 1440
     channel = 3
  
-    fps = 30
+    fps = 60
     sec = 60
  
 
@@ -243,7 +244,7 @@ def detect(opt):
                 clss = det[:, 5]
 
                 tdView = None
-                img2 = None
+                image = None
 
                 
                 if frame_idx == 0:
@@ -265,11 +266,20 @@ def detect(opt):
                     tdView = table.draw_balls(outputs, confs)
                     #img2 = np.random.randint(0,255, (hieght, width, channel), dtype = np.uint8)
                     #print("ARRAY1", tdView)
-                    tdView = np.pad(tdView, ((108, 109), (178, 179), (0, 0)))
+                    #tdView = np.pad(tdView, ((108, 109), (178, 179), (0, 0)))
+                    tdView = Image.fromarray(tdView)
                     tdView = cv2.cvtColor(tdView, cv2.COLOR_BGR2RGB)
-                    print('TYPEEE', tdView.dtype)
-                    print("ARRAY", tdView.shape)
-                    print("ARRAY2", img2.shape)
+                    im0 = Image.fromarray(im0)
+                    image = background.copy()
+                    image.paste(im0)
+                    image.paste(tdView, (2015, 95))
+
+                    
+                    #print('TYPEEE', tdView.dtype)
+                    print("ARRAY", tdView.size)
+                    print("ARRAY2", image.size)
+                    image = np.asarray(image)
+                    print("ARRAY3", image.shape)
 
 
 
@@ -320,14 +330,14 @@ def detect(opt):
                         w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                         h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                     else:  # stream
-                        fps, w, h = 30, tdView.shape[1], tdView.shape[0]
+                        fps, w, h = 60, image.shape[1], image.shape[0]
                     
 
                     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
                     vid_writer = cv2.VideoWriter(save_path, fourcc, float(fps), (width, hieght), True)
         
                 #img = np.random.randint(0,255, (hieght, width, channel), dtype = np.uint8)
-                vid_writer.write(tdView)
+                vid_writer.write(image)
 
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
