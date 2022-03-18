@@ -101,64 +101,64 @@ class tablecreation:
                 elif output[5] == 1: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (245, 212, 27), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-3,Y+self.border_size-4), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
                 elif output[5] == 2: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (3, 15, 252), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-3,Y+self.border_size-4), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
                 elif output[5] == 3: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (252, 3, 19), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-3,Y+self.border_size-4), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
                 elif output[5] == 4: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (30, 1, 115), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-3,Y+self.border_size-4), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
                 elif output[5] == 5: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (255, 123, 8), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-3,Y+self.border_size-4), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
                 elif output[5] == 6: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (10, 69, 0), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-3,Y+self.border_size-4), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
                 elif output[5] == 7: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (61, 11, 0), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-3,Y+self.border_size-4), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
                 elif output[5] == 8: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (0, 0, 0), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-3,Y+self.border_size-4), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
                 elif output[5] == 9: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (255, 255, 255), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
                     #final = cv2.ellipse(final, (X + self.border_size,Y+self.border_size), (radius//3, radius), 90, 0, 360, (255,255,255), -1)
-                    final = cv2.rectangle(final, (X + self.border_size-radius+2,Y+self.border_size-5), (X + self.border_size+radius-2,Y+self.border_size+5), (245, 212, 27), -1 )
+                    final = cv2.rectangle(final, (X + self.border_size-radius+1,Y+self.border_size-10), (X + self.border_size+radius-1,Y+self.border_size+10), (245, 212, 27), -1 )
                 elif output[5] == 10: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (255, 255, 255), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.rectangle(final, (X + self.border_size-radius+2,Y+self.border_size-5), (X + self.border_size+radius-2,Y+self.border_size+5), (3, 15, 252), -1 )
+                    final = cv2.rectangle(final, (X + self.border_size-radius+1,Y+self.border_size-10), (X + self.border_size+radius-1,Y+self.border_size+10), (3, 15, 252), -1 )
                 elif output[5] == 11: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (255, 255, 255), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.rectangle(final, (X + self.border_size-radius+2,Y+self.border_size-5), (X + self.border_size+radius-2,Y+self.border_size+5), (252, 3, 19), -1 )
+                    final = cv2.rectangle(final, (X + self.border_size-radius+1,Y+self.border_size-10), (X + self.border_size+radius-1,Y+self.border_size+10), (252, 3, 19), -1 )
                 elif output[5] == 12: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (255, 255, 255), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.rectangle(final, (X + self.border_size-radius+2,Y+self.border_size-5), (X + self.border_size+radius-2,Y+self.border_size+5), (30, 1, 115), -1 )
+                    final = cv2.rectangle(final, (X + self.border_size-radius+1,Y+self.border_size-10), (X + self.border_size+radius-1,Y+self.border_size+10), (30, 1, 115), -1 )
                 elif output[5] == 13: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (255, 255, 255), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.rectangle(final, (X + self.border_size-radius+2,Y+self.border_size-5), (X + self.border_size+radius-2,Y+self.border_size+5), (255, 123, 8), -1 )
+                    final = cv2.rectangle(final, (X + self.border_size-radius+1,Y+self.border_size-10), (X + self.border_size+radius-1,Y+self.border_size+10), (255, 123, 8), -1 )
                 elif output[5] == 14: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (255, 255, 255), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.rectangle(final, (X + self.border_size-radius+2,Y+self.border_size-5), (X + self.border_size+radius-2,Y+self.border_size+5), (10, 69, 0), -1 )
+                    final = cv2.rectangle(final, (X + self.border_size-radius+1,Y+self.border_size-10), (X + self.border_size+radius-1,Y+self.border_size+10), (10, 69, 0), -1 )
                 else:
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (255, 255, 255), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.rectangle(final, (X + self.border_size-radius+2,Y+self.border_size-5), (X + self.border_size+radius-2,Y+self.border_size+5), (61, 11, 0), -1 )
+                    final = cv2.rectangle(final, (X + self.border_size-radius+1,Y+self.border_size-10), (X + self.border_size+radius-1,Y+self.border_size+10), (61, 11, 0), -1 )
             
             # balls design:
             
