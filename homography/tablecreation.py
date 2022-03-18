@@ -12,8 +12,8 @@ class tablecreation:
         self.projCalculator = projectionCalculator3d
         self.frameHeight = self.projCalculator.frame.shape[0]
         self.frameWidth = self.projCalculator.frame.shape[1]
-        self.theight, self.twidth = 445, 865 #252, 504
-        self.border_size = 29 #17
+        self.theight, self.twidth = 890, 1730 #445, 865 
+        self.border_size = 58 #29
         #self.height, self.width = 300, 531
         #self.theight, self.twidth = self.height - self.border_size, self.width - self.border_size
         self.rail_size = int(self.theight*0.02808988764)
