@@ -181,9 +181,9 @@ def detect(opt):
 
     #projector = None
     table = None
-    background = Image.new('RGB', (2560, 1440), color = 'black')
-    width = 2560
-    hieght = 1440
+    background = Image.new('RGB', (3840, 2160), color = 'black')
+    width = 3840
+    hieght = 2160
     channel = 3
  
     fps = 60
@@ -268,11 +268,11 @@ def detect(opt):
                     #print("ARRAY1", tdView)
                     #tdView = np.pad(tdView, ((108, 109), (178, 179), (0, 0)))
                     tdView = Image.fromarray(tdView)
-                    tdView = cv2.cvtColor(tdView, cv2.COLOR_BGR2RGB)
+                    #tdView = cv2.cvtColor(tdView, cv2.COLOR_BGR2RGB)
                     im0 = Image.fromarray(im0)
                     image = background.copy()
                     image.paste(im0)
-                    image.paste(tdView, (2015, 95))
+                    image.paste(tdView, (1960, 40))
 
                     
                     #print('TYPEEE', tdView.dtype)
