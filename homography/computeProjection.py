@@ -48,7 +48,7 @@ class ProjectionCalculator3d():
     print('corners', corners, 'center', centers)
     self.points2d = np.concatenate((corners, centers))
     print('2d points', self.points2d)
-    self.points3d = [[0, 0, 0], [865, 0, 0], [865, 445, 0], [0, 445, 0], [222.5, 222.5, -6], [642.5, 222.5, -6]] # change 5 to -h + r for last 2
+    self.points3d = [[0, 0, 0], [1730, 0, 0], [1730, 890, 0], [0, 890, 0], [445, 445, -12], [1285, 445, -12]] # change 5 to -h + r for last 2
     self.calculateMatrix()
   
   def calculateMatrix(self):
@@ -91,7 +91,7 @@ class ProjectionCalculator3d():
     ])
     self.resultMatrixInversed = np.linalg.inv(self.resultMatrix)
 
-  def getUnprojectedPoint(self, point2d, height):
+  def getUnprojectedPoint(self, point2d, height=-12):
     if height == None:
       raise Exception('Point height must be defined for 3d unprojection')
     point1 = np.matrix([[point2d[0]], [point2d[1]], [1], [1]])
@@ -123,6 +123,9 @@ class ProjectionCalculator3d():
     intersectionZ = (c * intersectionX + e) / a
 
     return [intersectionX, intersectionY, intersectionZ]
+  
+  def getUnprojectedSet(self, points):
+    return [self.getUnprojectedPoint(x) for x in points] 
 
 #im = cv.imread(r'C:\Users\reuby\OneDrive\Pictures\2ball.jpeg')
 #model = PoolBallDetection()
