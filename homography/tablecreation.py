@@ -8,15 +8,15 @@ from homography.computeProjection import ProjectionCalculator3d
 
 
 class tablecreation:
-    def __init__(self, projectionCalculator3d):#, frameWidth=2016, frameHeight=1512):
-        self.projCalculator = projectionCalculator3d
+    def __init__(self):#, projectionCalculator3d):#, frameWidth=2016, frameHeight=1512):
+        #self.projCalculator = projectionCalculator3d
         self.frameHeight = self.projCalculator.frame.shape[0]
         self.frameWidth = self.projCalculator.frame.shape[1]
         self.theight, self.twidth = 890, 1730 #445, 865 
         self.border_size = 58 #29
         #self.height, self.width = 300, 531
         #self.theight, self.twidth = self.height - self.border_size, self.width - self.border_size
-        self.rail_size = int(self.theight*0.02808988764)
+        self.rail_size = 25 #int(self.theight*0.02808988764)
         #self.frameWidth = frameWidth
         #self.frameHeight = frameHeight
         self.background = None
@@ -35,8 +35,8 @@ class tablecreation:
         cv2.line(img,(self.border_size+self.rail_size, self.theight+self.border_size-self.rail_size),(self.twidth+self.border_size-self.rail_size, self.theight+self.border_size-self.rail_size),(0,0,0))
 
         #create dots
-        cv2.circle(img, (self.border_size + self.rail_size + (self.twidth-self.rail_size)//4, self.border_size + self.theight//2), 2, (0, 0, 0), -1) 
-        cv2.circle(img, (self.border_size + + self.rail_size + (int(3*(self.twidth-self.rail_size)/4)), self.border_size + (self.theight//2)), 2, (0, 0, 0), -1)
+        cv2.circle(img, (self.border_size + self.rail_size + round((self.twidth-self.rail_size)/4), round(self.border_size + self.theight/2)), 2, (0, 0, 0), -1) 
+        cv2.circle(img, (self.border_size + + self.rail_size + (round(3*(self.twidth-self.rail_size)/4)), round(self.border_size + self.theight/2)), 2, (0, 0, 0), -1)
 
         #self.background = img
 
@@ -50,7 +50,7 @@ class tablecreation:
         #img = self.background.copy() # make a copy of input image
         
         # adding circles to represent holes on table
-        pocket_radius = int(self.twidth*0.029)
+        pocket_radius = round(self.twidth*0.029)
         cv2.circle(img, (self.border_size+5, self.border_size+5), pocket_radius+4,color, -1) # top right
         cv2.circle(img, (self.twidth+self.border_size-5,self.border_size+5), pocket_radius+4, color, -1) # top left
         cv2.circle(img, (self.border_size+5,self.theight+self.border_size-5), pocket_radius+4, color, -1) # bot left
@@ -72,7 +72,7 @@ class tablecreation:
 
     def draw_balls(self, outputs, confs, size = -1, img = 0): #radius of ball is roughly 4.75cm 
         final = self.background.copy()
-        radius=int(self.theight*0.02584269662)
+        radius= 23 #int(self.theight*0.02584269662)
         ball_points = []
         for i, (output, conf) in enumerate(zip(outputs, confs)):
             notAdd = False
@@ -80,8 +80,8 @@ class tablecreation:
                 break
             #row = cords[i]
             if conf >= 0.4:
-                x, y = ((output[0]+output[2])//2, (output[1]+output[3])//2)
-                X, Y, Z = self.projCalculator.getUnprojectedPoint((x, y), self.theight*-0.01348314606)#change z component
+                #x, y = ((output[0]+output[2])//2, (output[1]+output[3])//2)
+                #X, Y, Z = self.projCalculator.getUnprojectedPoint((x, y), self.theight*-0.01348314606)#change z component
                 X, Y = int(X), int(Y)
                 print(X, Y, confs[i], output[5])
                 for x in ball_points:
@@ -101,35 +101,35 @@ class tablecreation:
                 elif output[5] == 1: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (245, 212, 27), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-6,Y+self.border_size-8), radius//5, (255,255,255), -1)
                 elif output[5] == 2: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (3, 15, 252), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-6,Y+self.border_size-8), radius//5, (255,255,255), -1)
                 elif output[5] == 3: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (252, 3, 19), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-6,Y+self.border_size-8), radius//5, (255,255,255), -1)
                 elif output[5] == 4: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (30, 1, 115), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-6,Y+self.border_size-8), radius//5, (255,255,255), -1)
                 elif output[5] == 5: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (255, 123, 8), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-6,Y+self.border_size-8), radius//5, (255,255,255), -1)
                 elif output[5] == 6: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (10, 69, 0), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-6,Y+self.border_size-8), radius//5, (255,255,255), -1)
                 elif output[5] == 7: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (61, 11, 0), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-6,Y+self.border_size-8), radius//5, (255,255,255), -1)
                 elif output[5] == 8: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (0, 0, 0), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)
-                    final = cv2.circle(final, (X + self.border_size-2,Y+self.border_size-2), radius//5, (255,255,255), -1)
+                    final = cv2.circle(final, (X + self.border_size-6,Y+self.border_size-8), radius//5, (255,255,255), -1)
                 elif output[5] == 9: 
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, (255, 255, 255), size) # -1 to fill ball with color
                     final = cv2.circle(final, (X + self.border_size,Y + self.border_size), radius, 0, 1)

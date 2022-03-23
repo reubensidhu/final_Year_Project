@@ -70,9 +70,10 @@ class Track:
         self.track_id = track_id
         self.class_id = class_id
         self.hits = 1
-        self.age = 1
+        self.age = 1 #changed 
         self.time_since_update = 0
         self.yolo_bbox = [0, 0, 0, 0]
+        self.prevMean = None
 
         self.final_clss = None
 
@@ -84,7 +85,7 @@ class Track:
         self._n_init = n_init
         self._max_age = max_age
 
-    def to_tlwh(self):
+    def to_tlwh(self, prevMean=None):
         """Get current position in bounding box format `(top left x, top left y,
         width, height)`.
 
@@ -97,6 +98,13 @@ class Track:
         ret = self.mean[:4].copy()
         ret[2] *= ret[3]
         ret[:2] -= ret[2:] / 2
+
+        if prevMean:
+            ret2 = self.mean[:4].copy()
+            ret2[2] *= ret[3]
+            ret2[:2] -= ret[2:] / 2
+            return [ret, ret2]
+
         return ret
 
     def to_tlbr(self):
@@ -112,6 +120,12 @@ class Track:
         ret = self.to_tlwh()
         ret[2:] = ret[:2] + ret[2:]
         return ret
+
+    def to_center(self):
+        ret = self.to_tlwh(prevMean=self.prevMean)
+        ret[2:] = ret[:2] + ret[2:]/2
+        return [(x[:2] + x[2:]/2) for x in ret]
+
 
     def get_yolo_pred(self):
         """Get yolo prediction`.
@@ -153,14 +167,20 @@ class Track:
             The associated detection.
 
         """
+
         self.yolo_bbox = detection
         self.mean, self.covariance = kf.update(
             self.mean, self.covariance, detection.to_xyah())
         self.features.append(detection.feature)
         self.class_id = class_id
 
+        if self.age%11 == 0:
+            self.prevMean = self.mean
+
         self.hits += 1
         self.time_since_update = 0
+
+        #self.track_velocity = 
         if self.state == TrackState.Tentative and self.hits >= self._n_init:
             self.state = TrackState.Confirmed
 

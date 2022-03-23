@@ -34,7 +34,7 @@ from homography.computeProjection import ProjectionCalculator3d
 from homography.getCorners import getCorners
 from homography.tablecreation import tablecreation
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 import numpy as np
 import torch.nn as nn
@@ -251,8 +251,10 @@ def detect(opt):
                 #CODE FOR COMPUTING PROJECTION
                     centers = xywhs[:, 0:2].cpu().numpy()
                     projector = ProjectionCalculator3d(im0, centers)
+                    #change computeProjection to get projected points instead of table creation
                     table = tablecreation(projector)
                     table.create_table()
+                    deepsort.setProjector(projector)
                     #pass
 
                 else:
@@ -278,15 +280,20 @@ def detect(opt):
                     #print('TYPEEE', tdView.dtype)
                     print("ARRAY", tdView.size)
                     print("ARRAY2", image.size)
-                    image = np.asarray(image)
-                    print("ARRAY3", image.shape)
+                    
 
+                    statRow = 1200
+                    statCol = 2000
 
+                    d = ImageDraw.Draw(image)
+                    fnt = ImageFont.truetype('/Library/Fonts/Arial.ttf', 30)
+                    d.text((statRow,statCol), "Billiard Balls:", fill=(255,255,255), font=fnt)
 
                     # draw boxes for visualization
                     if len(outputs) > 0:
                         for j, (output, conf) in enumerate(zip(outputs, confs)):
 
+                            print('VELOCITY', output[6])
                             bboxes = output[0:4]
                             id = output[4]
                             cls = output[5]
@@ -307,6 +314,9 @@ def detect(opt):
                                                                 bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))
 
                     LOGGER.info(f'{s}Done. YOLO:({t3 - t2:.3f}s), DeepSort:({t5 - t4:.3f}s)')
+
+                    image = np.asarray(image)
+                    print("ARRAY3", image.shape)
 
             else:
                 deepsort.increment_ages()

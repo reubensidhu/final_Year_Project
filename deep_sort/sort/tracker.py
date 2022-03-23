@@ -43,6 +43,8 @@ class Tracker:
         self.n_init = n_init
         self._lambda = _lambda
 
+        self.projector = None
+
         self.kf = kalman_filter.KalmanFilter()
         self.tracks = []
         self.prev_track_clsses = {}
@@ -189,3 +191,6 @@ class Tracker:
             mean, covariance, self._next_id, class_id, self.n_init, self.max_age,
             detection.feature))
         self._next_id += 1
+
+    def setProjector(self, projector):
+        self.projector = projector

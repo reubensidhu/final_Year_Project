@@ -11,6 +11,8 @@ import numpy as np
 import torch.nn as nn
 import torchvision
 
+import math
+
 sys.path.append('deep_sort/deep/reid')
 #from torchreid.utils import FeatureExtractor
 
@@ -109,6 +111,8 @@ class DeepSort(object):
         self.encoder = self.encoder.eval()
         self.gaussian_mask = get_gaussian_mask().cuda()
 
+        self.projector = None
+
         max_cosine_distance = max_dist
         metric = NearestNeighborDistanceMetric(
             "cosine", max_cosine_distance, nn_budget)
@@ -157,6 +161,10 @@ class DeepSort(object):
                 x1, y1, x2, y2 = self._tlwh_to_xyxy(det.tlwh)
             else:
                 box = track.to_tlwh()
+                centers = track.to_center()
+                centers = [self.projector.getUnprojectedPoint(x) for x in centers]
+                distance = math.sqrt((centers[0][0] - centers[1][0])**2 + (centers[0][1] - centers[1][1])**2)
+                velocity = (distance/10)/0.166666
                 x1, y1, x2, y2 = self._tlwh_to_xyxy(box)
             track_id = track.track_id
             if track.final_clss:
@@ -166,7 +174,7 @@ class DeepSort(object):
                 class_id = max(set(l), key = l.count) 
                 
             #class_id = track.class_id
-            outputs.append(np.array([x1, y1, x2, y2, track_id, class_id], dtype=np.int))
+            outputs.append(np.array([x1, y1, x2, y2, track_id, class_id, velocity], dtype=np.int))
         if len(outputs) > 0:
             outputs = np.stack(outputs, axis=0)
         return outputs
@@ -342,3 +350,6 @@ class DeepSort(object):
                     ([last], np.where(overlap > max_bbox_overlap)[0])))
 
         return pick
+    
+    def setProjector(self, projector):
+        self.projector = projector
