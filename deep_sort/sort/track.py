@@ -73,7 +73,7 @@ class Track:
         self.age = 1 #changed 
         self.time_since_update = 0
         self.yolo_bbox = [0, 0, 0, 0]
-        self.prevMean = None
+        self.prevMean = mean
 
         self.final_clss = None
 
@@ -123,7 +123,7 @@ class Track:
 
     def to_center(self):
         ret = self.to_tlwh(prevMean=self.prevMean)
-        ret[2:] = ret[:2] + ret[2:]/2
+        #ret[2:] = ret[:2] + ret[2:]/2
         return [(x[:2] + x[2:]/2) for x in ret]
 
 

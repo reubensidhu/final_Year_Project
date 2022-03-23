@@ -8,8 +8,8 @@ from homography.computeProjection import ProjectionCalculator3d
 
 
 class tablecreation:
-    def __init__(self):#, projectionCalculator3d):#, frameWidth=2016, frameHeight=1512):
-        #self.projCalculator = projectionCalculator3d
+    def __init__(self, projectionCalculator3d):#, frameWidth=2016, frameHeight=1512):
+        self.projCalculator = projectionCalculator3d
         self.frameHeight = self.projCalculator.frame.shape[0]
         self.frameWidth = self.projCalculator.frame.shape[1]
         self.theight, self.twidth = 890, 1730 #445, 865 
