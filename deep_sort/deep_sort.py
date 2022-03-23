@@ -165,6 +165,8 @@ class DeepSort(object):
                 centers = [self.projector.getUnprojectedPoint(x) for x in centers]
                 distance = math.sqrt((centers[0][0] - centers[1][0])**2 + (centers[0][1] - centers[1][1])**2)
                 velocity = (distance/10)/0.166666
+                if velocity < 3:
+                    velocity = 0
                 x1, y1, x2, y2 = self._tlwh_to_xyxy(box)
             track_id = track.track_id
             if track.final_clss:
@@ -174,7 +176,7 @@ class DeepSort(object):
                 class_id = max(set(l), key = l.count) 
                 
             #class_id = track.class_id
-            outputs.append(np.array([x1, y1, x2, y2, track_id, class_id, velocity], dtype=np.int))
+            outputs.append(np.array([x1, y1, x2, y2, track_id, class_id, velocity], dtype=np.float16))
         if len(outputs) > 0:
             outputs = np.stack(outputs, axis=0)
         return outputs

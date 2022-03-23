@@ -286,7 +286,7 @@ def detect(opt):
                     statCol = 2000
 
                     d = ImageDraw.Draw(image)
-                    fnt = ImageFont.truetype('/Library/Fonts/Arial.ttf', 30)
+                    fnt = ImageFont.truetype('OpenSans-Regular.ttf', 30)
                     d.text((statRow,statCol), "Billiard Balls:", fill=(255,255,255), font=fnt)
 
                     # draw boxes for visualization
