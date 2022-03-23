@@ -186,6 +186,7 @@ def detect(opt):
     hieght = 2160
     channel = 3
  
+    fnt = ImageFont.truetype('OpenSans-Regular.ttf', 50)
     fps = 60
     sec = 60
  
@@ -268,12 +269,13 @@ def detect(opt):
                     tdView = table.draw_balls(outputs, confs)
                     #img2 = np.random.randint(0,255, (hieght, width, channel), dtype = np.uint8)
                     #print("ARRAY1", tdView)
-                    #tdView = np.pad(tdView, ((108, 109), (178, 179), (0, 0)))
+                    #tdView = np.pad(tdView, ((108, 109), (178, 179), (0, 0)))#
+                    tdView = cv2.cvtColor(tdView, cv2.COLOR_BGR2RGB)
                     tdView = Image.fromarray(tdView)
-                    #tdView = cv2.cvtColor(tdView, cv2.COLOR_BGR2RGB)
+                    
                     im0 = Image.fromarray(im0)
                     image = background.copy()
-                    image.paste(im0)
+                    image.paste(im0, (0, 540))
                     image.paste(tdView, (1960, 40))
 
                     
@@ -282,36 +284,53 @@ def detect(opt):
                     print("ARRAY2", image.size)
                     
 
-                    statRow = 1200
                     statCol = 2000
+                    statRow = 1200
 
                     d = ImageDraw.Draw(image)
-                    fnt = ImageFont.truetype('OpenSans-Regular.ttf', 30)
-                    d.text((statRow,statCol), "Billiard Balls:", fill=(255,255,255), font=fnt)
+                    #fnt = ImageFont.truetype('OpenSans-Regular.ttf', 30)
+                    d.text((statCol,statRow), "Billiard Balls:", fill=(255,255,255), font=fnt)
 
-                    # draw boxes for visualization
+                    for i in range(16):
+                        statRow += 50
+                        #print('ROW!!', statRow, statCol)
+                        d.text((statCol + 25,statRow), "-" + names[i] + ":", fill=(255,255,255), font=fnt)
+
+
                     if len(outputs) > 0:
                         for j, (output, conf) in enumerate(zip(outputs, confs)):
+                            statRow = 1250
+                            for k in range(int(output[5])):
+                                statRow += 50
+                            d.text((statCol + 500,statRow), str(output[6]), fill=(255,255,255), font=fnt)
 
-                            print('VELOCITY', output[6])
-                            bboxes = output[0:4]
-                            id = output[4]
-                            cls = output[5]
 
-                            c = int(cls)  # integer class
-                            label = f'{id} {names[c]} {conf:.2f}'
-                            annotator.box_label(bboxes, label, color=colors(c, True))
 
-                            if save_txt:
-                                # to MOT format
-                                bbox_left = output[0]
-                                bbox_top = output[1]
-                                bbox_w = output[2] - output[0]
-                                bbox_h = output[3] - output[1]
-                                # Write MOT compliant results to file
-                                with open(txt_path, 'a') as f:
-                                    f.write(('%g ' * 10 + '\n') % (frame_idx + 1, id, bbox_left,  # MOT format
-                                                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))
+                           # statRow += 10
+
+                    # draw boxes for visualization
+                   # if len(outputs) > 0:
+                    #    for j, (output, conf) in enumerate(zip(outputs, confs)):
+#
+  #                          print('VELOCITY', output[6])
+ #                           bboxes = output[0:4]
+   #                         id = output[4]
+    #                        cls = output[5]
+#
+ #                           c = int(cls)  # integer class
+    #                        label = f'{id} {names[c]} {conf:.2f}'
+   #                         annotator.box_label(bboxes, label, color=colors(c, True))
+#
+ #                           if save_txt:
+  #                              # to MOT format
+   #                             bbox_left = output[0]
+    #                            bbox_top = output[1]
+     #                           bbox_w = output[2] - output[0]
+      #                          bbox_h = output[3] - output[1]
+       #                         # Write MOT compliant results to file
+        #                        with open(txt_path, 'a') as f:
+         #                           f.write(('%g ' * 10 + '\n') % (frame_idx + 1, id, bbox_left,  # MOT format
+          #                                                      bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))
 
                     LOGGER.info(f'{s}Done. YOLO:({t3 - t2:.3f}s), DeepSort:({t5 - t4:.3f}s)')
 
