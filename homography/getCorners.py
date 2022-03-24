@@ -224,7 +224,7 @@ class getCorners:
 		bottom_side = math.sqrt((ll[0] - lr[0])**2 + (ll[1] - lr[1])**2)#math.dist(ll, lr)
 		top_side = math.sqrt((ul[0] - ur[0])**2 + (ul[1] - ur[1])**2)#math.dist(ul, ur)
 
-		if (min(left_side, right_side) * 2 >= min(bottom_side, top_side)): #(2 * length >= width):
+		if (((left_side + right_side)/2) * 2 >= max(bottom_side, top_side)): #(2 * length >= width):
 			#print('shortside', left_side, bottom_side)
 			self.isShortSide = True
 		print('angle', self.isShortSide)   
