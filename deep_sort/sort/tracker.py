@@ -103,6 +103,7 @@ class Tracker:
                 else:
                     self.prev_track_clsses[t.track_id] = collections.deque([t.class_id])
         
+        self.deletedtracks = [t for t in self.tracks if t.is_deleted()]
         self.tracks = [t for t in self.tracks if not t.is_deleted()]
 
         # Update distance metric.
