@@ -112,6 +112,9 @@ class DeepSort(object):
         self.gaussian_mask = get_gaussian_mask().cuda()
 
         self.projector = None
+        self.pocketed = []
+
+        self.corners = [[5, 5], [1725, 5], [5, 885], [1725, 885], [865, 893], [865, -3]]
 
         max_cosine_distance = max_dist
         metric = NearestNeighborDistanceMetric(
@@ -153,6 +156,12 @@ class DeepSort(object):
 
         # output bbox identities
         outputs = []
+
+        for track in self.tracker.deletedtracks:
+            if track.get_pos() and self.isCloseToPocket(track.get_pos()):
+                self.pocketed.append(track.final_clss)
+
+
         for track in self.tracker.tracks:
             if not track.is_confirmed() or track.time_since_update > 1:
                 continue
@@ -164,10 +173,15 @@ class DeepSort(object):
                 centers = track.to_center()
                 centers = [self.projector.getUnprojectedPoint(x) for x in centers]
                 distance = math.sqrt((centers[0][0] - centers[1][0])**2 + (centers[0][1] - centers[1][1])**2)
+
+                track.set_pos(centers[0])
                 velocity = (distance/10)/0.166666
                 if velocity < 3:
                     velocity = 0
-                x1, y1, x2, y2 = self._tlwh_to_xyxy(box)
+
+                track.set_velocity(velocity)
+
+                #x1, y1, x2, y2 = self._tlwh_to_xyxy(box)
             track_id = track.track_id
             if track.final_clss:
                 class_id = track.final_clss
@@ -176,10 +190,10 @@ class DeepSort(object):
                 class_id = max(set(l), key = l.count) 
                 
             #class_id = track.class_id
-            outputs.append(np.array([x1, y1, x2, y2, track_id, class_id, velocity], dtype=np.float16))
+            outputs.append(np.array([centers[0][0], centers[0][1], track_id, class_id, velocity], dtype=np.float16))
         if len(outputs) > 0:
             outputs = np.stack(outputs, axis=0)
-        return outputs
+        return (outputs, self.pocketed)
 
     def pre_process(self,frame,detections):	
         
@@ -355,3 +369,11 @@ class DeepSort(object):
     
     def setProjector(self, projector):
         self.projector = projector
+    
+    def isCloseToPocket(self, position):
+        for i in range(0, 6):
+            dist = math.sqrt((position[0] - self.corners[i][0])**2 + (position[1] - self.corners[i][1])**2)
+            if dist <= 20:
+                return True
+        
+        return False
