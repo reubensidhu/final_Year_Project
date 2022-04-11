@@ -80,6 +80,10 @@ class Track:
 
         self.final_clss = None
 
+        self.velocity = None
+
+        self.position = None
+
         self.state = TrackState.Tentative
         self.features = []
         if feature is not None:
@@ -210,3 +214,15 @@ class Track:
     def is_deleted(self):
         """Returns True if this track is dead and should be deleted."""
         return self.state == TrackState.Deleted
+
+    def set_velocity(self, velocity):
+        self.velocity = velocity
+    
+    def get_velocity(self):
+        return self.velocity
+
+    def set_pos(self, position):
+        self.position = position
+    
+    def get_pos(self):
+        return self.position
