@@ -261,7 +261,7 @@ def detect(opt):
                 else:
                     # pass detections to deepsort
                     t4 = time_sync()
-                    outputs = deepsort.update(xywhs.cpu(), confs.cpu(), clss.cpu(), im0)
+                    outputs,pocketed = deepsort.update(xywhs.cpu(), confs.cpu(), clss.cpu(), im0)
                     t5 = time_sync()
                     dt[3] += t5 - t4
 
@@ -290,6 +290,8 @@ def detect(opt):
                     d = ImageDraw.Draw(image)
                     #fnt = ImageFont.truetype('OpenSans-Regular.ttf', 30)
                     d.text((statCol,statRow), "Billiard Balls:", fill=(255,255,255), font=fnt)
+                    d.text((statCol + 1000,statRow), "Pocketed Balls:", fill=(255,255,255), font=fnt)
+                    
 
                     for i in range(16):
                         statRow += 50
@@ -300,9 +302,15 @@ def detect(opt):
                     if len(outputs) > 0:
                         for j, (output, conf) in enumerate(zip(outputs, confs)):
                             statRow = 1250
-                            for k in range(int(output[5])):
+                            for k in range(int(output[3])):
                                 statRow += 50
-                            d.text((statCol + 500,statRow), str(output[6]), fill=(255,255,255), font=fnt)
+                            d.text((statCol + 500,statRow), str(output[4]), fill=(255,255,255), font=fnt)
+                    
+                    statRow = 1250
+                    for ball in pocketed:
+                         d.text((statCol + 1025,statRow), "-" + names[int(ball)], fill=(255,255,255), font=fnt)
+                         statRow += 50
+
 
 
 
