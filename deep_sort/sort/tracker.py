@@ -8,6 +8,7 @@ from .track import Track
 
 import collections
 
+
 class Tracker:
     """
     This is the multi-target tracker.
@@ -83,26 +84,29 @@ class Tracker:
         for track_idx in unmatched_tracks:
             self.tracks[track_idx].mark_missed()
         for detection_idx in unmatched_detections:
-            self._initiate_track(detections[detection_idx], classes[detection_idx].item())
+            self._initiate_track(
+                detections[detection_idx], classes[detection_idx].item())
         for t in self.tracks:
             if t.is_deleted():
                 del self.prev_track_clsses[t.track_id]
             elif t.final_clss != None:
                 continue
-            #elif len(self.prev_track_clsses[t.track_id]) == 20:
+            # elif len(self.prev_track_clsses[t.track_id]) == 20:
              #   l = self.prev_track_clsses[t.track_id]
               #  t.final_clss = max(set(l), key = l.count)
                 #del self.prev_track_clsses[t.track_id]
             else:
                 if t.track_id in self.prev_track_clsses:
-                    if len(self.prev_track_clsses[t.track_id])==20:
+                    if len(self.prev_track_clsses[t.track_id]) == 20:
                         l = self.prev_track_clsses[t.track_id]
-                        t.final_clss = max(set(l), key = l.count)
+                        t.final_clss = max(set(l), key=l.count)
                     else:
-                        self.prev_track_clsses[t.track_id].appendleft(t.class_id)
+                        self.prev_track_clsses[t.track_id].appendleft(
+                            t.class_id)
                 else:
-                    self.prev_track_clsses[t.track_id] = collections.deque([t.class_id])
-        
+                    self.prev_track_clsses[t.track_id] = collections.deque([
+                                                                           t.class_id])
+
         self.deletedtracks = [t for t in self.tracks if t.is_deleted()]
         self.tracks = [t for t in self.tracks if not t.is_deleted()]
 
@@ -115,7 +119,8 @@ class Tracker:
             features += track.features
             targets += [track.track_id for _ in track.features]
             track.features = []
-        self.metric.partial_fit(np.asarray(features), np.asarray(targets), active_targets)
+        self.metric.partial_fit(np.asarray(features),
+                                np.asarray(targets), active_targets)
 
     def _full_cost_metric(self, tracks, dets, track_indices, detection_indices):
         """
@@ -147,19 +152,23 @@ class Tracker:
         app_gate = app_cost > self.metric.matching_threshold
         # Now combine and threshold
         cost_matrix = self._lambda * pos_cost + (1 - self._lambda) * app_cost
-        cost_matrix[np.logical_or(pos_gate, app_gate)] = linear_assignment.INFTY_COST
+        cost_matrix[np.logical_or(pos_gate, app_gate)
+                    ] = linear_assignment.INFTY_COST
         # Return Matrix
         return cost_matrix
 
     def _match(self, detections):
         # Split track set into confirmed and unconfirmed tracks.
-        confirmed_tracks = [i for i, t in enumerate(self.tracks) if t.is_confirmed()]
-        unconfirmed_tracks = [i for i, t in enumerate(self.tracks) if not t.is_confirmed()]
+        confirmed_tracks = [i for i, t in enumerate(
+            self.tracks) if t.is_confirmed()]
+        unconfirmed_tracks = [i for i, t in enumerate(
+            self.tracks) if not t.is_confirmed()]
 
         # Associate confirmed tracks using appearance features.
         matches_a, unmatched_tracks_a, unmatched_detections = linear_assignment.matching_cascade(
             self._full_cost_metric,
-            linear_assignment.INFTY_COST - 1,  # no need for self.metric.matching_threshold here,
+            # no need for self.metric.matching_threshold here,
+            linear_assignment.INFTY_COST - 1,
             self.max_age,
             self.tracks,
             detections,

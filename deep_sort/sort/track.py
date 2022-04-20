@@ -71,7 +71,7 @@ class Track:
         self.track_id = track_id
         self.class_id = class_id
         self.hits = 1
-        self.age = 1 #changed 
+        self.age = 1  # changed
         self.time_since_update = 0
         self.yolo_bbox = [0, 0, 0, 0]
         #self.prevMean = mean
@@ -92,7 +92,7 @@ class Track:
         self._n_init = n_init
         self._max_age = max_age
 
-    def to_tlwh(self, velocityCalc = False):
+    def to_tlwh(self, velocityCalc=False):
         """Get current position in bounding box format `(top left x, top left y,
         width, height)`.
 
@@ -106,7 +106,6 @@ class Track:
         ret[2] *= ret[3]
         ret[:2] -= ret[2:] / 2
 
-        
         if velocityCalc:
             ret2 = self.mean_array[-1][:4].copy()
             ret2[2] *= ret2[3]
@@ -133,7 +132,6 @@ class Track:
         ret = self.to_tlwh(velocityCalc=True)
         #ret[2:] = ret[:2] + ret[2:]/2
         return [(x[:2] + x[2:]/2) for x in ret]
-
 
     def get_yolo_pred(self):
         """Get yolo prediction`.
@@ -189,8 +187,6 @@ class Track:
         if len(self.mean_array) > 11:
             self.mean_array.pop()
 
-
-        #self.track_velocity = 
         if self.state == TrackState.Tentative and self.hits >= self._n_init:
             self.state = TrackState.Confirmed
 
@@ -217,12 +213,12 @@ class Track:
 
     def set_velocity(self, velocity):
         self.velocity = velocity
-    
+
     def get_velocity(self):
         return self.velocity
 
     def set_pos(self, position):
         self.position = position
-    
+
     def get_pos(self):
         return self.position

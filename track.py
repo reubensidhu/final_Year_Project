@@ -18,6 +18,8 @@ from pathlib import Path
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
+import json
+
 
 from yolov5.models.experimental import attempt_load
 from yolov5.utils.downloads import attempt_download
@@ -190,6 +192,7 @@ def detect(opt):
     fps = 60
     sec = 60
  
+    data = []
 
     for frame_idx, (path, img, im0s, vid_cap, s) in enumerate(dataset):
         t1 = time_sync()
@@ -262,6 +265,8 @@ def detect(opt):
                     # pass detections to deepsort
                     t4 = time_sync()
                     outputs,pocketed = deepsort.update(xywhs.cpu(), confs.cpu(), clss.cpu(), im0)
+                    data.append((frame_idx,outputs))
+                    # here
                     t5 = time_sync()
                     dt[3] += t5 - t4
 
@@ -376,6 +381,13 @@ def detect(opt):
                 #img = np.random.randint(0,255, (hieght, width, channel), dtype = np.uint8)
                 vid_writer.write(image)
 
+    import pickle
+    #jsonString = json.dumps(data)
+    pickle.dump( data, open( "save.p", "wb" ) )
+
+    #with open('json_data.json', 'w') as outfile:
+        #outfile.write(jsonString)
+    
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
     LOGGER.info(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS, %.1fms deep sort update \

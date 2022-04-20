@@ -20,93 +20,94 @@ __all__ = ['DeepSort']
 
 
 def get_gaussian_mask():
-	#128 is image size
-	x, y = np.mgrid[0:1.0:128j, 0:1.0:128j]
-	xy = np.column_stack([x.flat, y.flat])
-	mu = np.array([0.5,0.5])
-	sigma = np.array([0.22,0.22])
-	covariance = np.diag(sigma**2) 
-	z = multivariate_normal.pdf(xy, mean=mu, cov=covariance) 
-	z = z.reshape(x.shape) 
+    # 128 is image size
+    x, y = np.mgrid[0:1.0:128j, 0:1.0:128j]
+    xy = np.column_stack([x.flat, y.flat])
+    mu = np.array([0.5, 0.5])
+    sigma = np.array([0.22, 0.22])
+    covariance = np.diag(sigma**2)
+    z = multivariate_normal.pdf(xy, mean=mu, cov=covariance)
+    z = z.reshape(x.shape)
 
-	z = z / z.max()
-	z  = z.astype(np.float32)
+    z = z / z.max()
+    z = z.astype(np.float32)
 
-	mask = torch.from_numpy(z)
+    mask = torch.from_numpy(z)
 
-	return mask
+    return mask
+
 
 class SiameseNetwork(nn.Module):
     def __init__(self):
         super(SiameseNetwork, self).__init__()
 
-        #Outputs batch X 512 X 1 X 1 
+        # Outputs batch X 512 X 1 X 1
         self.net = nn.Sequential(
-            nn.Conv2d(3,32,kernel_size=3,stride=2),
+            nn.Conv2d(3, 32, kernel_size=3, stride=2),
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(32),
-            #nn.Dropout2d(p=0.4),
+            # nn.Dropout2d(p=0.4),
 
-            nn.Conv2d(32,64,kernel_size=3,stride=2),
+            nn.Conv2d(32, 64, kernel_size=3, stride=2),
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(64),
-            #nn.Dropout2d(p=0.4),
+            # nn.Dropout2d(p=0.4),
 
-            nn.Conv2d(64,128,kernel_size=3,stride=2),
+            nn.Conv2d(64, 128, kernel_size=3, stride=2),
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(128),
-            #nn.Dropout2d(p=0.4),            
+            # nn.Dropout2d(p=0.4),
 
 
-            nn.Conv2d(128,256,kernel_size=1,stride=2),
+            nn.Conv2d(128, 256, kernel_size=1, stride=2),
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(256),
-            #nn.Dropout2d(p=0.4),
+            # nn.Dropout2d(p=0.4),
 
-            nn.Conv2d(256,256,kernel_size=1,stride=2),
+            nn.Conv2d(256, 256, kernel_size=1, stride=2),
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(256),
-            #nn.Dropout2d(p=0.4),    
+            # nn.Dropout2d(p=0.4),
 
-            nn.Conv2d(256,512,kernel_size=3,stride=2),
+            nn.Conv2d(256, 512, kernel_size=3, stride=2),
             nn.ReLU(inplace=True),
-            nn.BatchNorm2d(512),    
+            nn.BatchNorm2d(512),
 
-            #1X1 filters to increase dimensions
-            nn.Conv2d(512,1024,kernel_size=1,stride=1),
+            # 1X1 filters to increase dimensions
+            nn.Conv2d(512, 1024, kernel_size=1, stride=1),
             nn.ReLU(inplace=True),
-            nn.BatchNorm2d(1024),    
+            nn.BatchNorm2d(1024),
 
-            )
-
+        )
 
     def forward_once(self, x):
         output = self.net(x)
         #output = output.view(output.size()[0], -1)
         #output = self.fc(output)
-        
+
         output = torch.squeeze(output)
         return output
 
-    def forward(self, input1, input2,input3=None):
+    def forward(self, input1, input2, input3=None):
         output1 = self.forward_once(input1)
         output2 = self.forward_once(input2)
 
         if input3 is not None:
             output3 = self.forward_once(input3)
-            return output1,output2,output3
+            return output1, output2, output3
 
         return output1, output2
+
 
 class DeepSort(object):
     def __init__(self, wt_path, max_dist=0.2, max_iou_distance=0.7, max_age=70, n_init=3, nn_budget=100):
 
-        #self.extractor = FeatureExtractor(
+        # self.extractor = FeatureExtractor(
         #    model_name=model_type,
         #    device=str(device)
-        #)
+        # )
 
-        self.encoder = torch.load(wt_path)			
+        self.encoder = torch.load(wt_path)
         self.encoder = self.encoder.cuda()
         self.encoder = self.encoder.eval()
         self.gaussian_mask = get_gaussian_mask().cuda()
@@ -114,7 +115,8 @@ class DeepSort(object):
         self.projector = None
         self.pocketed = []
 
-        self.corners = [[5, 5], [1725, 5], [5, 885], [1725, 885], [865, 893], [865, -3]]
+        self.corners = [[5, 5], [1725, 5], [5, 885],
+                        [1725, 885], [865, 893], [865, -3]]
 
         max_cosine_distance = max_dist
         metric = NearestNeighborDistanceMetric(
@@ -128,17 +130,15 @@ class DeepSort(object):
         detections = np.array(bbox_tlwh)
 
         # generate detections
-        processed_crops = self.pre_process(ori_img,detections).cuda()
+        processed_crops = self.pre_process(ori_img, detections).cuda()
         processed_crops = self.gaussian_mask * processed_crops
-        
+
         features = self.encoder.forward_once(processed_crops)
         features = features.detach().cpu().numpy()
-        
-        if len(features.shape)==1:
-            features = np.expand_dims(features,0)
 
-        #features = self._get_features(bbox_xywh, ori_img)
-        #bbox_tlwh = self._xywh_to_tlwh(bbox_xywh)
+        if len(features.shape) == 1:
+            features = np.expand_dims(features, 0)
+
 
         detections = [Detection(bbox_tlwh[i], conf, features[i]) for i, conf in enumerate(
             confidences)]
@@ -147,7 +147,7 @@ class DeepSort(object):
         boxes = np.array([d.tlwh for d in detections])
         scores = np.array([d.confidence for d in detections])
 
-        indices = self.non_max_suppression(boxes, 0.85,scores) #get rid?
+        indices = self.non_max_suppression(boxes, 0.85, scores)  
         detections = [detections[i] for i in indices]
 
         # update tracker
@@ -161,7 +161,6 @@ class DeepSort(object):
             if track.get_pos() and self.isCloseToPocket(track.get_pos()):
                 self.pocketed.append(track.final_clss)
 
-
         for track in self.tracker.tracks:
             if not track.is_confirmed() or track.time_since_update > 1:
                 continue
@@ -171,8 +170,10 @@ class DeepSort(object):
             else:
                 box = track.to_tlwh()
                 centers = track.to_center()
-                centers = [self.projector.getUnprojectedPoint(x) for x in centers]
-                distance = math.sqrt((centers[0][0] - centers[1][0])**2 + (centers[0][1] - centers[1][1])**2)
+                centers = [self.projector.getUnprojectedPoint(
+                    x) for x in centers]
+                distance = math.sqrt(
+                    (centers[0][0] - centers[1][0])**2 + (centers[0][1] - centers[1][1])**2)
 
                 track.set_pos(centers[0])
                 velocity = (distance/10)/0.166666
@@ -186,56 +187,57 @@ class DeepSort(object):
             if track.final_clss:
                 class_id = track.final_clss
             else:
-                l = self.tracker.prev_track_clsses[track_id] 
-                class_id = max(set(l), key = l.count) 
-                
+                l = self.tracker.prev_track_clsses[track_id]
+                class_id = max(set(l), key=l.count)
+
             #class_id = track.class_id
-            outputs.append(np.array([centers[0][0], centers[0][1], track_id, class_id, velocity], dtype=np.float16))
+            outputs.append(np.array(
+                [centers[0][0], centers[0][1], track_id, class_id, velocity], dtype=np.float16))
         if len(outputs) > 0:
             outputs = np.stack(outputs, axis=0)
         return (outputs, self.pocketed)
 
-    def pre_process(self,frame,detections):	
-        
-        transforms = torchvision.transforms.Compose([ \
-		torchvision.transforms.ToPILImage(),\
-		torchvision.transforms.Resize((128,128)),\
-		torchvision.transforms.ToTensor()])
-        
+    def pre_process(self, frame, detections):
+
+        transforms = torchvision.transforms.Compose([
+            torchvision.transforms.ToPILImage(),
+            torchvision.transforms.Resize((128, 128)),
+            torchvision.transforms.ToTensor()])
+
         crops = []
         for d in detections:
-            
+
             for i in range(len(d)):
-                if d[i] <0:
-                    d[i] = 0	
-                    
-            img_h,img_w,img_ch = frame.shape
-            
-            xmin,ymin,w,h = d
-            
+                if d[i] < 0:
+                    d[i] = 0
+
+            img_h, img_w, img_ch = frame.shape
+
+            xmin, ymin, w, h = d
+
             if xmin > img_w:
                 xmin = img_w
-                
+
             if ymin > img_h:
                 ymin = img_h
-            
+
             xmax = xmin + w
             ymax = ymin + h
-            
+
             ymin = abs(int(ymin))
             ymax = abs(int(ymax))
             xmin = abs(int(xmin))
             xmax = abs(int(xmax))
-            
+
             try:
-                crop = frame[ymin:ymax,xmin:xmax,:]
+                crop = frame[ymin:ymax, xmin:xmax, :]
                 crop = transforms(crop)
                 crops.append(crop)
             except:
                 continue
-            
+
         crops = torch.stack(crops)
-        
+
         return crops
 
     """
@@ -366,14 +368,15 @@ class DeepSort(object):
                     ([last], np.where(overlap > max_bbox_overlap)[0])))
 
         return pick
-    
+
     def setProjector(self, projector):
         self.projector = projector
-    
+
     def isCloseToPocket(self, position):
         for i in range(0, 6):
-            dist = math.sqrt((position[0] - self.corners[i][0])**2 + (position[1] - self.corners[i][1])**2)
+            dist = math.sqrt(
+                (position[0] - self.corners[i][0])**2 + (position[1] - self.corners[i][1])**2)
             if dist <= 20:
                 return True
-        
+
         return False
