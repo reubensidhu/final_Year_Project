@@ -14,7 +14,7 @@ Code Citations:
 @misc{
     title={DeepSORT: Deep Learning to Track Custom Objects in a Video},
     author={Shishira R Maiya},
-    howpublished = {\url{https://github.com/abhyantrika/nanonets_object_tracking.git}},
+    howpublished = {\url{https://colab.research.google.com/drive/1Sp2qPDgQW96aaWAwCj2nVrZKLiTh459Q?usp=sharing}},
     year={2019}
 }
 
