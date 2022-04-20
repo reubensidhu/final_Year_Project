@@ -339,7 +339,7 @@ def detect(opt):
                 vid_writer.write(image)
 
     #jsonString = json.dumps(data)
-    dataFilePath = 'data/data.p'
+    dataFilePath = 'pickleData/data.p'
     readData.add_to_pickle(dataFilePath, data)
 
     #with open('json_data.json', 'w') as outfile:
