@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from homography.computeProjection import ProjectionCalculator3d
+#from homography.computeProjection import ProjectionCalculator3d
 #from yoloModel import PoolBallDetection
 #from homography.getCorners import getCorners
 

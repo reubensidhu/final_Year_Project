@@ -34,10 +34,9 @@ from deep_sort.utils.parser import get_config
 from deep_sort.deep_sort import DeepSort
 
 from homography.computeProjection import ProjectionCalculator3d
-from homography.getCorners import getCorners
 from homography.tablecreation import tablecreation
 
-from data import readData
+from pickleData import readData
 from PIL import Image, ImageDraw, ImageFont
 
 import numpy as np
