@@ -19,6 +19,7 @@ import cv2
 import torch
 import torch.backends.cudnn as cudnn
 import json
+import pickle
 
 
 from yolov5.models.experimental import attempt_load
@@ -250,31 +251,22 @@ def detect(opt):
                 tdView = None
                 image = None
 
-                
                 if frame_idx == 0:
                 #CODE FOR COMPUTING PROJECTION
                     centers = xywhs[:, 0:2].cpu().numpy()
                     projector = ProjectionCalculator3d(im0, centers)
-                    #change computeProjection to get projected points instead of table creation
                     table = tablecreation(projector)
                     table.create_table()
                     deepsort.setProjector(projector)
                     #pass
-
                 else:
                     # pass detections to deepsort
                     t4 = time_sync()
                     outputs,pocketed = deepsort.update(xywhs.cpu(), confs.cpu(), clss.cpu(), im0)
                     data.append((frame_idx,outputs))
-                    # here
                     t5 = time_sync()
                     dt[3] += t5 - t4
-
-
                     tdView = table.draw_balls(outputs, confs)
-                    #img2 = np.random.randint(0,255, (hieght, width, channel), dtype = np.uint8)
-                    #print("ARRAY1", tdView)
-                    #tdView = np.pad(tdView, ((108, 109), (178, 179), (0, 0)))#
                     tdView = cv2.cvtColor(tdView, cv2.COLOR_BGR2RGB)
                     tdView = Image.fromarray(tdView)
                     
@@ -283,26 +275,20 @@ def detect(opt):
                     image.paste(im0, (0, 540))
                     image.paste(tdView, (1960, 40))
 
-                    
-                    #print('TYPEEE', tdView.dtype)
                     print("ARRAY", tdView.size)
                     print("ARRAY2", image.size)
                     
-
                     statCol = 2000
                     statRow = 1200
 
                     d = ImageDraw.Draw(image)
-                    #fnt = ImageFont.truetype('OpenSans-Regular.ttf', 30)
                     d.text((statCol,statRow), "Billiard Balls:", fill=(255,255,255), font=fnt)
                     d.text((statCol + 1000,statRow), "Pocketed Balls:", fill=(255,255,255), font=fnt)
                     
-
                     for i in range(16):
                         statRow += 50
                         #print('ROW!!', statRow, statCol)
                         d.text((statCol + 25,statRow), "-" + names[i] + ":", fill=(255,255,255), font=fnt)
-
 
                     if len(outputs) > 0:
                         for j, (output, conf) in enumerate(zip(outputs, confs)):
@@ -315,35 +301,6 @@ def detect(opt):
                     for ball in pocketed:
                          d.text((statCol + 1025,statRow), "-" + names[int(ball)], fill=(255,255,255), font=fnt)
                          statRow += 50
-
-
-
-
-                           # statRow += 10
-
-                    # draw boxes for visualization
-                   # if len(outputs) > 0:
-                    #    for j, (output, conf) in enumerate(zip(outputs, confs)):
-#
-  #                          print('VELOCITY', output[6])
- #                           bboxes = output[0:4]
-   #                         id = output[4]
-    #                        cls = output[5]
-#
- #                           c = int(cls)  # integer class
-    #                        label = f'{id} {names[c]} {conf:.2f}'
-   #                         annotator.box_label(bboxes, label, color=colors(c, True))
-#
- #                           if save_txt:
-  #                              # to MOT format
-   #                             bbox_left = output[0]
-    #                            bbox_top = output[1]
-     #                           bbox_w = output[2] - output[0]
-      #                          bbox_h = output[3] - output[1]
-       #                         # Write MOT compliant results to file
-        #                        with open(txt_path, 'a') as f:
-         #                           f.write(('%g ' * 10 + '\n') % (frame_idx + 1, id, bbox_left,  # MOT format
-          #                                                      bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))
 
                     LOGGER.info(f'{s}Done. YOLO:({t3 - t2:.3f}s), DeepSort:({t5 - t4:.3f}s)')
 
@@ -381,9 +338,8 @@ def detect(opt):
                 #img = np.random.randint(0,255, (hieght, width, channel), dtype = np.uint8)
                 vid_writer.write(image)
 
-    import pickle
     #jsonString = json.dumps(data)
-    pickle.dump( data, open( "save.p", "wb" ) )
+    pickle.dump( data, open( "data.p", "wb" ) )
 
     #with open('json_data.json', 'w') as outfile:
         #outfile.write(jsonString)

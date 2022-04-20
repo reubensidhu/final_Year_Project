@@ -1,23 +1,7 @@
-# CLASS TAKES FRAME FROM GUI THEN GIVES FRAME TO YOLO AND GETCORNERS CLASS
-# CLASS THEN USES CORNER AND BALL CENTERS TO COMPUTE PROJECTION USING TABLE CREATION CLASS
-# CAN just use theight and twidth in this class then they can be added to borders in tablecreation
-
-# declare model when gui app launches then feed that model here for the first frame.
-# then each time button is pressed use that same model to compute results and draw ball
 from os import TMP_MAX
 import numpy as np
 import cv2 as cv
 from homography.getCorners import getCorners
-#from yoloModel import PoolBallDetection
-
-# class ProjectionCalculator:
-#  def __init__(self, points3d, points2d):
-#    if not (points3d and points2d):
-#       raise Exception('Two arrays with points must be provided. ')
-#    if (len(points3d) != len(points2d)):
-#      raise Exception('Lengths of point arrays must be equal. ')
-#    self.points3d = points3d
-#    self.points2d = points2d
 
 
 class ProjectionCalculator3d():
@@ -29,13 +13,8 @@ class ProjectionCalculator3d():
     def getPoints(self):
         c = getCorners(self.frame)
         corners = c()
-        print('corners', corners)
-        #labels, coords = self.model.score_frame(self.frame)
-        #coords = coords.numpy()
+        #print('corners', corners)    
         centers = self.centers
-        # for i in range(0, 2):
-        #  centers.append([int(self.frame.shape[1] * ((self.coords[i][0]+self.coords[i][2])/2)),
-        #  int(self.frame.shape[0] * ((self.coords[i][1]+self.coords[i][3])/2))])
         if c.isShortSide and (centers[0][1] > centers[1][1]):
             tmp1 = centers[0]
             tmp2 = centers[1]
@@ -46,9 +25,9 @@ class ProjectionCalculator3d():
             centers = [tmp2, tmp1]
         else:
             pass
-        print('corners', corners, 'center', centers)
+        #print('corners', corners, 'center', centers)
         self.points2d = np.concatenate((corners, centers))
-        print('2d points', self.points2d)
+        #print('2d points', self.points2d)
         self.points3d = [[0, 0, 0], [1730, 0, 0], [1730, 890, 0], [0, 890, 0], [
             445, 445, -12], [1285, 445, -12]]  # change 5 to -h + r for last 2
         self.calculateMatrix()
@@ -86,9 +65,9 @@ class ProjectionCalculator3d():
 
         u, s, vh = np.linalg.svd(generalMatrix)  # unsure about the vh here
         matrix = vh  # matrix = vh.transpose()
-        print('shape', matrix.shape)
+        #print('shape', matrix.shape)
         subMatrix = matrix[11]
-        print('shape', subMatrix)
+        #print('shape', subMatrix)
         #subMatrix = matrix.subMatrix(11, 11, 0, 11)[0]
         self.resultMatrix = np.matrix([
             [subMatrix[0], subMatrix[1], subMatrix[2], subMatrix[3]],

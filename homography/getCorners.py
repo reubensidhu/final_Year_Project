@@ -76,9 +76,6 @@ class getCorners:
         lower_bound = np.array([hsv[0] - 20, hsv[1] - 115, hsv[2] - 115])
         upper_bound = np.array([hsv[0] + 20, hsv[1] + 115, hsv[2] + 115])
 
-        #lower_bound = np.array([78.8, 39.9 - 115, 152.18 - 115])
-        #upper_bound = np.array([98.8 + 20, 39.9 + 115, 152 + 115])
-
         # Compute mask and remove unnecessary noise from it
         mask = cv.inRange(hsv_img, lower_bound, upper_bound)
         kernel = np.ones((7, 7), np.uint8)
