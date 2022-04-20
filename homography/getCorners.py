@@ -26,7 +26,7 @@ class getCorners:
         table_outline = self.get_table_outline(self.hsv, hsv_img)
         corners = self.find_corners(table_outline)  # output list is 3D
         # corners = [elem for twod in corners for elem in twod] #convert to 2D
-        self.show_img_compar_i([hsv_img, table_outline])
+        #self.show_img_compar_i([hsv_img, table_outline])
         i = self.order_corners(corners)
         print('i', i)
         return i

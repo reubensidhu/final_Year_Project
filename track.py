@@ -37,6 +37,7 @@ from homography.computeProjection import ProjectionCalculator3d
 from homography.getCorners import getCorners
 from homography.tablecreation import tablecreation
 
+from data import readData
 from PIL import Image, ImageDraw, ImageFont
 
 import numpy as np
@@ -189,7 +190,7 @@ def detect(opt):
     hieght = 2160
     channel = 3
  
-    fnt = ImageFont.truetype('OpenSans-Regular.ttf', 50)
+    fnt = ImageFont.truetype('fonts/OpenSans-Regular.ttf', 50)
     fps = 60
     sec = 60
  
@@ -228,7 +229,7 @@ def detect(opt):
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg, vid.mp4, ...
             #save_path = 'runs/track/exp20/practiceVid.avi'
-            print('PATH!!!!!!', save_path)
+            #print('PATH!!!!!!', save_path)
             s += '%gx%g ' % img.shape[2:]  # print string
 
             annotator = Annotator(im0, line_width=2, pil=not ascii)
@@ -339,7 +340,8 @@ def detect(opt):
                 vid_writer.write(image)
 
     #jsonString = json.dumps(data)
-    pickle.dump( data, open( "data.p", "wb" ) )
+    dataFilePath = 'data/data.p'
+    readData.add_to_pickle(dataFilePath, data)
 
     #with open('json_data.json', 'w') as outfile:
         #outfile.write(jsonString)
@@ -349,7 +351,8 @@ def detect(opt):
     LOGGER.info(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS, %.1fms deep sort update \
         per image at shape {(1, 3, *imgsz)}' % t)
     if save_txt or save_vid:
-        print('Results saved to %s' % save_path)
+        print('Video saved to %s' % save_path)
+        print('Data file saved to ' + dataFilePath)
         if platform == 'darwin':  # MacOS
             os.system('open ' + save_path)
 
