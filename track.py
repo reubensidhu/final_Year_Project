@@ -121,7 +121,7 @@ def detect(opt):
     # initialize deepsort
     cfg = get_config()
     cfg.merge_from_file(opt.config_deepsort)
-    deepsort = DeepSort(wt_path='siameseweights.pt',
+    deepsort = DeepSort(wt_path='weights/siameseweights.pt',
                         max_dist=cfg.DEEPSORT.MAX_DIST,
                         max_iou_distance=cfg.DEEPSORT.MAX_IOU_DISTANCE,
                         max_age=cfg.DEEPSORT.MAX_AGE, n_init=cfg.DEEPSORT.N_INIT, nn_budget=cfg.DEEPSORT.NN_BUDGET,

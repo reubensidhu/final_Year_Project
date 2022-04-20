@@ -1,5 +1,5 @@
 import pickle
 
-data = pickle.load( open( "save.p", "rb" ) )
+data = pickle.load( open( "data.p", "rb" ) )
 
 print(data[3])
