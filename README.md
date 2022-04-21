@@ -1,6 +1,6 @@
-My final year project which uses Deep Learning to Analysis a video for Eight-ball Pool
+My final year project which uses Deep Learning to Analyse a video for Eight-ball Pool
 
-To get the code running go to {\url{https://github.com/abhyantrika/nanonets_object_tracking.git}} and execute each cell in order. The text above each cell describes its purpose.
+To get the code running go to https://colab.research.google.com/drive/1Sp2qPDgQW96aaWAwCj2nVrZKLiTh459Q?usp=sharing and execute each cell in order. The text above each cell describes its purpose. Ensure a GPU runtime type!
 
 Code Citations:
 
