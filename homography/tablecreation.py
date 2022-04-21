@@ -2,13 +2,9 @@ import cv2
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-#from homography.computeProjection import ProjectionCalculator3d
-#from yoloModel import PoolBallDetection
-#from homography.getCorners import getCorners
-
 
 class tablecreation:
-    # , frameWidth=2016, frameHeight=1512):
+    
     def __init__(self, projectionCalculator3d):
         self.projCalculator = projectionCalculator3d
         self.frameHeight = self.projCalculator.frame.shape[0]
@@ -172,7 +168,6 @@ class tablecreation:
                                        radius, (255, 255, 255), size)  # -1 to fill ball with color
                     final = cv2.circle(
                         final, (X + self.border_size, Y + self.border_size), radius, 0, 1)
-                    #final = cv2.ellipse(final, (X + self.border_size,Y+self.border_size), (radius//3, radius), 90, 0, 360, (255,255,255), -1)
                     final = cv2.rectangle(final, (X + self.border_size-radius+3, Y+self.border_size-10),
                                           (X + self.border_size+radius-3, Y+self.border_size+10), (245, 212, 27), -1)
                 elif output[3] == 10:
@@ -230,11 +225,3 @@ class tablecreation:
         plt.savefig('demo.png', bbox_inches='tight')
         # plt.show()
 
-#model = PoolBallDetection()
-#projector = ProjectionCalculator3d(cv2.imread(r'C:\Users\reuby\OneDrive\Pictures\longside1.jpeg') , model)
-#c = tablecreation(projector)
-# c.create_table()
-#frame = cv2.imread(r'C:\Users\reuby\OneDrive\Pictures\longside1.jpeg')
-#table = c.draw_balls(results=model.score_frame(frame))
-#frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-#c.show_img_compar_i([frame, table])

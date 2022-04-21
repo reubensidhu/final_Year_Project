@@ -25,8 +25,6 @@ class getCorners:
         print('hsv', self.hsv)
         table_outline = self.get_table_outline(self.hsv, hsv_img)
         corners = self.find_corners(table_outline)  # output list is 3D
-        # corners = [elem for twod in corners for elem in twod] #convert to 2D
-        #self.show_img_compar_i([hsv_img, table_outline])
         i = self.order_corners(corners)
         print('i', i)
         return i
@@ -81,7 +79,6 @@ class getCorners:
         kernel = np.ones((7, 7), np.uint8)
         mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, kernel)
         mask = cv.morphologyEx(mask, cv.MORPH_OPEN, kernel)
-        #median = cv.medianBlur(mask, 5)
 
         # Compute all the contours in the mask
         contours, hierarchy = cv.findContours(
@@ -96,7 +93,6 @@ class getCorners:
         img = cv.drawContours(np.zeros_like(hsv_img), [
                               maxContour], -1, (180, 255, 255), 1)
 
-        # Use probabalistic Hough Transform to extract line segments from contour
         img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
         return img
@@ -104,8 +100,6 @@ class getCorners:
     # Extract 4 lines from the contour and compute intersections
 
     def find_corners(self, contour_img):
-        # lines = cv.HoughLinesP(src_img2, 1, np.pi/180, 150, None, 400, 100) #minlinelength is dependent on pixels
-        # CHANGED 75 FROM 100!!!!!!!!
         lines = cv.HoughLines(contour_img, 1, np.pi / 180, 75, None, 0, 0)
         print("lines", lines)
 
@@ -117,9 +111,6 @@ class getCorners:
                     strong_lines[n2] = lines[n1]
                     n2 += 1
                 else:
-                    # if rho < 0:
-                    #	rho*=-1
-                    #	theta-=np.pi
                     # dependent on image resolution
                     closeness_rho = np.isclose(
                         rho, strong_lines[0:n2, 0, 0], atol=50)
@@ -144,7 +135,6 @@ class getCorners:
             else:
                 break
 
-        # print(parallel_indexes)
         print("strong lines", strong_lines)
 
         def intersection(line1, line2):
@@ -198,7 +188,6 @@ class getCorners:
             lr, ur = corners[3], corners[2]
 
 
-        # math.dist(ul, ll) #??????
         left_side = math.sqrt((ul[0] - ll[0])**2 + (ul[1] - ll[1])**2)
         right_side = math.sqrt(
             (ur[0] - lr[0])**2 + (ur[1] - lr[1])**2)  # math.dist(ur, lr)
@@ -209,9 +198,7 @@ class getCorners:
 
     
         if (((left_side + right_side)/2) * 2 >= max(bottom_side, top_side)):
-            #print('shortside', left_side, bottom_side)
             self.isShortSide = True
-        #print('angle', self.isShortSide)
         if self.isShortSide:
             return np.array([ur, lr, ll, ul], dtype=np.float32)
         else:

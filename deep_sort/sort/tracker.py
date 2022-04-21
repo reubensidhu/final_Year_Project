@@ -91,10 +91,6 @@ class Tracker:
                 del self.prev_track_clsses[t.track_id]
             elif t.final_clss != None:
                 continue
-            # elif len(self.prev_track_clsses[t.track_id]) == 20:
-             #   l = self.prev_track_clsses[t.track_id]
-              #  t.final_clss = max(set(l), key = l.count)
-                #del self.prev_track_clsses[t.track_id]
             else:
                 if t.track_id in self.prev_track_clsses:
                     if len(self.prev_track_clsses[t.track_id]) == 20:

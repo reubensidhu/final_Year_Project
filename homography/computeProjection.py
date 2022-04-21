@@ -25,11 +25,9 @@ class ProjectionCalculator3d():
             centers = [tmp2, tmp1]
         else:
             pass
-        #print('corners', corners, 'center', centers)
         self.points2d = np.concatenate((corners, centers))
-        #print('2d points', self.points2d)
         self.points3d = [[0, 0, 0], [1730, 0, 0], [1730, 890, 0], [0, 890, 0], [
-            445, 445, -12], [1285, 445, -12]]  # change 5 to -h + r for last 2
+            445, 445, -12], [1285, 445, -12]] 
         self.calculateMatrix()
 
     def calculateMatrix(self):
@@ -63,12 +61,9 @@ class ProjectionCalculator3d():
             generalMatrix[k + 1, 11] = -self.points2d[i][1]
             k += 2
 
-        u, s, vh = np.linalg.svd(generalMatrix)  # unsure about the vh here
-        matrix = vh  # matrix = vh.transpose()
-        #print('shape', matrix.shape)
+        u, s, vh = np.linalg.svd(generalMatrix) 
+        matrix = vh  
         subMatrix = matrix[11]
-        #print('shape', subMatrix)
-        #subMatrix = matrix.subMatrix(11, 11, 0, 11)[0]
         self.resultMatrix = np.matrix([
             [subMatrix[0], subMatrix[1], subMatrix[2], subMatrix[3]],
             [subMatrix[4], subMatrix[5], subMatrix[6], subMatrix[7]],
@@ -120,7 +115,4 @@ class ProjectionCalculator3d():
     def getUnprojectedSet(self, points):
         return [self.getUnprojectedPoint(x) for x in points]
 
-#im = cv.imread(r'C:\Users\reuby\OneDrive\Pictures\2ball.jpeg')
-#model = PoolBallDetection()
-#c = ProjectionCalculator3d(im, model)
-#print(c.getUnprojectedPoint([885, 598], -3.65625))
+

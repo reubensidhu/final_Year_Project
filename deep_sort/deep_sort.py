@@ -182,15 +182,14 @@ class DeepSort(object):
 
                 track.set_velocity(velocity)
 
-                #x1, y1, x2, y2 = self._tlwh_to_xyxy(box)
             track_id = track.track_id
+            
             if track.final_clss:
                 class_id = track.final_clss
             else:
                 l = self.tracker.prev_track_clsses[track_id]
                 class_id = max(set(l), key=l.count)
 
-            #class_id = track.class_id
             outputs.append(np.array(
                 [centers[0][0], centers[0][1], track_id, class_id, velocity], dtype=np.float16))
         if len(outputs) > 0:

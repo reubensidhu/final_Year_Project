@@ -94,8 +94,6 @@ class SiameseNetwork(nn.Module):
 
     def forward_once(self, x):
         output = self.net(x)
-        #output = output.view(output.size()[0], -1)
-        #output = self.fc(output)
         
         output = torch.squeeze(output)
         return output
@@ -216,8 +214,7 @@ def detect(opt):
         dt[2] += time_sync() - t3
 
         # Process detections
-        for i, det in enumerate(pred):  # detections per image
-            #DET HERE ARE DETECTIONS FOR 640 BY 640 IMGSIZE!!!
+        for i, det in enumerate(pred):  
             seen += 1
             if webcam:  # batch_size >= 1
                 p, im0, _ = path[i], im0s[i].copy(), dataset.count
@@ -227,8 +224,6 @@ def detect(opt):
 
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg, vid.mp4, ...
-            #save_path = 'runs/track/exp20/practiceVid.avi'
-            #print('PATH!!!!!!', save_path)
             s += '%gx%g ' % img.shape[2:]  # print string
 
             annotator = Annotator(im0, line_width=2, pil=not ascii)
@@ -252,15 +247,12 @@ def detect(opt):
                 image = None
 
                 if frame_idx == 0:
-                #CODE FOR COMPUTING PROJECTION
                     centers = xywhs[:, 0:2].cpu().numpy()
                     projector = ProjectionCalculator3d(im0, centers)
                     table = tablecreation(projector)
                     table.create_table()
                     deepsort.setProjector(projector)
-                    #pass
                 else:
-                    # pass detections to deepsort
                     t4 = time_sync()
                     outputs,pocketed = deepsort.update(xywhs.cpu(), confs.cpu(), clss.cpu(), im0)
                     data.append((frame_idx,outputs))
@@ -275,19 +267,18 @@ def detect(opt):
                     image.paste(im0, (0, 540))
                     image.paste(tdView, (1960, 40))
 
-                    print("ARRAY", tdView.size)
-                    print("ARRAY2", image.size)
-                    
                     statCol = 2000
                     statRow = 1200
 
+                    #print("ARRAY", tdView.size)
+                    #print("ARRAY2", image.size)
+                    
                     d = ImageDraw.Draw(image)
                     d.text((statCol,statRow), "Billiard Balls:", fill=(255,255,255), font=fnt)
                     d.text((statCol + 1000,statRow), "Pocketed Balls:", fill=(255,255,255), font=fnt)
                     
                     for i in range(16):
                         statRow += 50
-                        #print('ROW!!', statRow, statCol)
                         d.text((statCol + 25,statRow), "-" + names[i] + ":", fill=(255,255,255), font=fnt)
 
                     if len(outputs) > 0:
@@ -335,15 +326,10 @@ def detect(opt):
                     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
                     vid_writer = cv2.VideoWriter(save_path, fourcc, float(fps), (width, hieght), True)
         
-                #img = np.random.randint(0,255, (hieght, width, channel), dtype = np.uint8)
                 vid_writer.write(image)
-
-    #jsonString = json.dumps(data)
+ 
     dataFilePath = 'pickleData/data.p'
     readData.add_to_pickle(dataFilePath, data)
-
-    #with open('json_data.json', 'w') as outfile:
-        #outfile.write(jsonString)
     
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image

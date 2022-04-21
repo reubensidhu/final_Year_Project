@@ -71,10 +71,10 @@ class Track:
         self.track_id = track_id
         self.class_id = class_id
         self.hits = 1
-        self.age = 1  # changed
+        self.age = 1  
         self.time_since_update = 0
         self.yolo_bbox = [0, 0, 0, 0]
-        #self.prevMean = mean
+        
 
         self.mean_array = collections.deque([])
 
@@ -130,7 +130,7 @@ class Track:
 
     def to_center(self):
         ret = self.to_tlwh(velocityCalc=True)
-        #ret[2:] = ret[:2] + ret[2:]/2
+        
         return [(x[:2] + x[2:]/2) for x in ret]
 
     def get_yolo_pred(self):
