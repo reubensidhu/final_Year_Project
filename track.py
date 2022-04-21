@@ -351,7 +351,7 @@ def detect(opt):
         per image at shape {(1, 3, *imgsz)}' % t)
     if save_txt or save_vid:
         print('Video saved to %s' % save_path)
-        print('Data file saved to ' + dataFilePath)
+        print('Data saved to ' + dataFilePath)
         if platform == 'darwin':  # MacOS
             os.system('open ' + save_path)
 
